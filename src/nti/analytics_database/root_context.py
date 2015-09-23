@@ -43,7 +43,7 @@ class Courses(Base, RootContext):
 class Books(Base, RootContext):
 	__tablename__ = 'Books'
 
-class _RootContextId(Base):
+class RootContextId(Base):
 	"""
 	A table to share a sequence between our RootContext tables; needed in mysql.
 	"""
@@ -53,3 +53,4 @@ class _RootContextId(Base):
 	# Start at 100 for simple migration.
 	context_id = Column('context_id', Integer, Sequence('context_id_seq', start=1000),
 						nullable=False, primary_key=True)
+_RootContextId = RootContextId # alias BWC
