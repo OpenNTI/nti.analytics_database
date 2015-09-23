@@ -29,10 +29,7 @@ setup(
 	namespace_packages=['nti'],
 	install_requires=[
 		'setuptools',
-		'python-geoip',
-		'python-geoip-geolite2',
-		'sqlalchemy',
-		'user-agents'
+		'sqlalchemy'
 	],
 	entry_points=entry_points
 )

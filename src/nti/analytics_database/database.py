@@ -9,8 +9,6 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-import transaction
-
 import os
 import ConfigParser
 
@@ -21,6 +19,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from zope import interface
 
 from zope.sqlalchemy import ZopeTransactionExtension
+
+import transaction
 
 from nti.common.property import Lazy
 
@@ -86,8 +86,7 @@ class AnalyticsDB(object):
 	@Lazy
 	def sessionmaker(self):
 		if self.autocommit or self.testmode:
-			result = sessionmaker(bind=self.engine,
-							  	  twophase=self.twophase)
+			result = sessionmaker(bind=self.engine, twophase=self.twophase)
 		else:
 			# Use the ZTE for transaction handling.
 			result = sessionmaker(bind=self.engine,
