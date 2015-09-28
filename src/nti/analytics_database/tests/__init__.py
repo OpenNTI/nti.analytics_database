@@ -7,7 +7,9 @@ __docformat__ = "restructuredtext en"
 # disable: accessing protected members, too many methods
 # pylint: disable=W0212,R0904
 
+import os
 import unittest
+import importlib
 
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -16,31 +18,15 @@ from sqlalchemy import create_engine as sqlalchemy_create_engine
 from nti.analytics_database import Base
 
 # import in order to create tables
-from nti.analytics_database.assessments import AssignmentViews
-
-from nti.analytics_database.blogs import BlogsCreated
-
-from nti.analytics_database.boards import TopicsViewed
-
-from nti.analytics_database.enrollments import CourseCatalogViews
-
-from nti.analytics_database.profile_views import EntityProfileViews
-
-from nti.analytics_database.resource_tags import NotesCreated
-
-from nti.analytics_database.resource_views import VideoEvents
-
-from nti.analytics_database.resources import Resources
-
-from nti.analytics_database.root_context import RootContextId
-
-from nti.analytics_database.sessions import Sessions
-
-from nti.analytics_database.social import ChatsJoined
-
-from nti.analytics_database.surveys import SurveysTaken
-
-from nti.analytics_database.users import Users
+def _import_db_modules():
+    path = os.path.join(os.path.dirname(__file__), '..')
+    files = [os.path.splitext(f)[0] for f in os.listdir(path) 
+             if os.path.isfile(os.path.join(path,f)) and f.endswith('.py') ]
+    for name in files:
+        name = "nti.analytics_database.%s" % name
+        importlib.import_module(name)
+_import_db_modules()
+del _import_db_modules
 
 def create_engine(dburi='sqlite://', pool_size=30, max_overflow=10, pool_recycle=300):    
     try:
