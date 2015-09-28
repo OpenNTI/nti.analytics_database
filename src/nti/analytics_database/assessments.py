@@ -158,8 +158,10 @@ class SelfAssessmentDetails(Base, BaseTableMixin, DetailMixin, GradeDetailMixin)
 							ForeignKey("SelfAssessmentsTaken.self_assessment_id"),
 							nullable=False, index=True)
 
-	self_assessment_details_id = Column('self_assessment_details_id', Integer,
-							Sequence('self_assessment_details_seq'), primary_key=True)
+	self_assessment_details_id = Column('self_assessment_details_id', 
+										Integer,
+										Sequence('self_assessment_details_seq'),
+										primary_key=True)
 
 class AssignmentViewMixin(AssignmentIdMixin, RootContextMixin, BaseViewMixin, TimeLengthMixin):
 
@@ -171,7 +173,7 @@ class SelfAssessmentViews(Base, AssignmentViewMixin):
 
 	__tablename__ = 'SelfAssessmentViews'
 	self_assessment_view_id = Column('self_assessment_view_id', Integer,
-									Sequence('self_assessment_view_id_seq'), primary_key=True)
+									 Sequence('self_assessment_view_id_seq'), primary_key=True)
 
 class AssignmentViews(Base, AssignmentViewMixin):
 

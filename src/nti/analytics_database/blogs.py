@@ -90,6 +90,7 @@ class BlogCommentFavorites(Base, BaseTableMixin, BlogCommentMixin, CreatorMixin)
 	)
 
 class BlogCommentLikes(Base, BaseTableMixin, BlogCommentMixin, CreatorMixin):
+
 	__tablename__ = 'BlogCommentLikes'
 
 	__table_args__ = (
