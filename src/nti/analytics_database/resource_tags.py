@@ -29,6 +29,8 @@ from .meta_mixins import RootContextMixin
 from . import Base
 from . import INTID_COLUMN_TYPE
 
+SHARING_ENUMS = Enum('GLOBAL', 'PRIVATE_COURSE', 'PUBLIC_COURSE', 'PRIVATE', 'OTHER')
+
 class NoteMixin(ResourceMixin):
 
 	@declared_attr
@@ -36,20 +38,19 @@ class NoteMixin(ResourceMixin):
 		return Column('note_id', Integer, ForeignKey("NotesCreated.note_id"), nullable=False, index=True)
 
 class NotesCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin, RatingsMixin):
-	
+
 	__tablename__ = 'NotesCreated'
-	
+
 	note_ds_id = Column('note_ds_id', INTID_COLUMN_TYPE, index=True, nullable=True,
 						unique=False, autoincrement=False)
-	
+
 	note_id = Column('note_id', Integer, Sequence('note_seq'), index=True,
 					 nullable=False, primary_key=True)
 
 	# Parent-id should be other notes; top-level notes will have null parent_ids
 	parent_id = Column('parent_id', Integer, nullable=True)
 	parent_user_id = Column('parent_user_id', Integer, index=True, nullable=True)
-	sharing = Column('sharing', Enum('PUBLIC', 'COURSE', 'OTHER', 'UNKNOWN'),
-					 nullable=False)
+	sharing = Column('sharing', SHARING_ENUMS, nullable=False)
 	note_length = Column('note_length', Integer, nullable=True)
 
 class NotesViewed(Base, BaseViewMixin, NoteMixin):
