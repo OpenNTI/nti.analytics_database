@@ -65,5 +65,5 @@ class IAnalyticsContextPathExpander(interface.Interface):
 	Marker interface to expand context paths
 	"""
 
-	def expand(path):
+	def __call__(path):
 		pass
