@@ -94,7 +94,7 @@ class BaseViewMixin(UserMixin):
 	def ContextPath(self):
 		expander = component.queryUtility(IAnalyticsContextPathExpander)
 		if expander is not None:
-			return expander.expand(self.context_path)
+			return expander(self.context_path)
 		return self.context_path
 
 class DeletedMixin(object):
