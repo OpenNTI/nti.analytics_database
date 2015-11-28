@@ -16,13 +16,45 @@ from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.schema import Index
+
 from sqlalchemy.ext.declarative import declared_attr
+
+from zope import component
+
+from nti.analytics.database._utils import get_root_context_obj
+
+from nti.common.property import alias
+
+from .interfaces import IAnalyticsIntidIdentifier
 
 from . import INTID_COLUMN_TYPE
 from . import SESSION_COLUMN_TYPE
 
-class BaseTableMixin(object):
+class UserMixin(object):
+
+	_user = None
+
+	@declared_attr
+	def _user_record(self):
+		return relationship( 'Users', lazy="select", foreign_keys=[self.user_id] )
+
+	@property
+	def user(self):
+		result = self._user
+		if result is None:
+			result = self._user_record.user
+		return result
+
+	@user.setter
+	def user(self, user):
+		self._user = user
+
+class BaseTableMixin(UserMixin):
+
+	SessionID = alias( 'session_id' )
 
 	# For migrating data, we may not have sessions (or timestamps); thus this is optional.
 	@declared_attr
@@ -35,7 +67,9 @@ class BaseTableMixin(object):
 
 	timestamp = Column('timestamp', DateTime, nullable=True, index=True)
 
-class BaseViewMixin(object):
+class BaseViewMixin(UserMixin):
+
+	SessionID = alias( 'session_id' )
 
 	# For resource views, we need timestamp to be non-null for primary key purposes.
 	# It will have to be fine-grain to avoid collisions.
@@ -52,6 +86,11 @@ class BaseViewMixin(object):
 	# Dashboard/lesson_ntiid
 	context_path = Column('context_path', String(1048), nullable=True)
 
+	@property
+	def ContextPath(self):
+		from nti.analytics.database._utils import expand_context_path
+		return expand_context_path( self.context_path )
+
 class DeletedMixin(object):
 
 	deleted = Column('deleted', DateTime)
@@ -65,23 +104,62 @@ class CourseMixin(object):
 		return (Index('ix_%s_user_course' % cls.__tablename__, 'user_id', 'course_id'),)
 
 class RootContextMixin(object):
+
+	_RootContext = None
+
 	entity_root_context_id = Column('entity_root_context_id', Integer,
 									nullable=True, index=True, autoincrement=False)
 	course_id = Column('course_id', Integer, nullable=True, index=True, autoincrement=False)
 
+	@property
+	def RootContext(self):
+		result = self._RootContext
+		if result is None:
+			result = get_root_context_obj( self )
+		return result
+
+	@RootContext.setter
+	def RootContext(self, root_context):
+		self._RootContext = root_context
+
 class ResourceMixin(RootContextMixin):
+
+	_MaxDuration = None
+
+	@declared_attr
+	def _resource(self):
+		return relationship( 'Resources', lazy="select" )
 
 	@declared_attr
 	def resource_id(cls):
 		return Column('resource_id', Integer, ForeignKey("Resources.resource_id"), nullable=False, index=True)
 
+	@property
+	def ResourceId(self):
+		return self._resource.resource_ds_id
+
+	@property
+	def MaxDuration(self):
+		return self._MaxDuration or self._resource.max_time_length
+
+	@MaxDuration.setter
+	def MaxDuration(self, max_duration):
+		self._MaxDuration = max_duration
+
 class ResourceViewMixin(ResourceMixin, BaseViewMixin):
 	pass
 
 class FavoriteMixin(object):
+
+	FavoriteCount = alias( 'favorite_count' )
+
 	favorite_count = Column('favorite_count', Integer, nullable=True)
 
 class RatingsMixin(FavoriteMixin):
+
+	Flagged = alias( 'is_flagged' )
+	LikeCount = alias( 'like_count' )
+
 	is_flagged = Column('is_flagged', Boolean, nullable=True)
 
 	like_count = Column('like_count', Integer, nullable=True)
@@ -90,17 +168,66 @@ class CreatorMixin(object):
 	"""
 	For tables referencing an object with a creator.
 	"""
+	_creator = None
 
 	@declared_attr
 	def creator_id(cls):
 		return Column('creator_id', Integer, ForeignKey("Users.user_id"), index=True)
 
+	@declared_attr
+	def _creator_record(self):
+		return relationship( 'Users', lazy="select", foreign_keys=[self.creator_id] )
+
+	@property
+	def ObjectCreator(self):
+		result = self._creator
+		if self._creator is None:
+			result = self._creator_record.user
+		return result
+
+	@ObjectCreator.setter
+	def ObjectCreator(self, creator):
+		self._creator = creator
+
 # Time length in seconds
 class TimeLengthMixin(object):
 
+	Duration = alias( 'time_length' )
+
 	time_length = Column('time_length', Integer, nullable=True)
 
-class CommentsMixin(BaseTableMixin, DeletedMixin):
+class ReplyToMixin( object ):
+
+	_replied_to_user = None
+
+	# parent_id should point to a parent comment; top-level comments will have null parent_ids
+	@declared_attr
+	def parent_id(cls):
+		return Column('parent_id', INTID_COLUMN_TYPE)
+
+	@declared_attr
+	def parent_user_id(cls):
+		return Column('parent_user_id', Integer, index=True, nullable=True)
+
+	@property
+	def IsReply(self):
+		return bool( self.parent_id is not None )
+
+	@property
+	def RepliedToUser(self):
+		result = self._replied_to_user
+		if result is None and self.parent_user_id:
+			from nti.analytics.database.users import get_user
+			result = get_user( self.parent_user_id )
+		return result
+
+	@RepliedToUser.setter
+	def RepliedToUser(self, replied_to_user):
+		self._replied_to_user = replied_to_user
+
+class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
+
+	CommentLength = alias( 'comment_length' )
 
 	# comment_id should be the DS intid
 	@declared_attr
@@ -111,11 +238,7 @@ class CommentsMixin(BaseTableMixin, DeletedMixin):
 	def comment_length(cls):
 		return Column('comment_length', Integer, nullable=True, autoincrement=False)
 
-	# parent_id should point to a parent comment; top-level comments will have null parent_ids
-	@declared_attr
-	def parent_id(cls):
-		return Column('parent_id', INTID_COLUMN_TYPE)
-
-	@declared_attr
-	def parent_user_id(cls):
-		return Column('parent_user_id', Integer, index=True, nullable=True)
+	@property
+	def Comment(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.comment_id )

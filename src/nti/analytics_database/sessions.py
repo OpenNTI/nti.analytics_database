@@ -18,6 +18,8 @@ from sqlalchemy import ForeignKey
 
 from sqlalchemy.schema import Sequence
 
+from nti.common.property import alias
+
 from . import Base
 from . import SESSION_COLUMN_TYPE
 
@@ -25,12 +27,25 @@ class Sessions(Base):
 
 	__tablename__ = 'Sessions'
 
+	SessionID = alias( 'session_id' )
+	SessionStartTime = alias( 'start_time' )
+	SessionEndTime = alias( 'end_time' )
+	time_length = alias( 'Duration' )
+
 	session_id = Column('session_id', SESSION_COLUMN_TYPE, Sequence('session_id_seq'), index=True, primary_key=True)
 	user_id = Column('user_id', Integer, ForeignKey("Users.user_id"), index=True, nullable=False)
 	ip_addr = Column('ip_addr', String(64))
 	user_agent_id = Column('user_agent_id', Integer)
 	start_time = Column('start_time', DateTime)
 	end_time = Column('end_time', DateTime)
+
+	@property
+	def Duration(self):
+		result = None
+		if self.SessionEndTime:
+			result = self.SessionEndTime - self.SessionStartTime
+			result = result.seconds
+		return result
 
 class IpGeoLocation(Base):
 

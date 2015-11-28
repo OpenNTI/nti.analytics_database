@@ -14,9 +14,17 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declared_attr
+
+from zope import component
+
+from nti.common.property import alias
+
+from .interfaces import IAnalyticsIntidIdentifier
 
 from .meta_mixins import CreatorMixin
 from .meta_mixins import RatingsMixin
@@ -25,6 +33,7 @@ from .meta_mixins import BaseViewMixin
 from .meta_mixins import ResourceMixin
 from .meta_mixins import BaseTableMixin
 from .meta_mixins import RootContextMixin
+from .meta_mixins import ReplyToMixin
 
 from . import Base
 from . import INTID_COLUMN_TYPE
@@ -33,13 +42,33 @@ SHARING_ENUMS = Enum('GLOBAL', 'PRIVATE_COURSE', 'PUBLIC_COURSE', 'PRIVATE', 'OT
 
 class NoteMixin(ResourceMixin):
 
+	_note = None
+
 	@declared_attr
 	def note_id(cls):
 		return Column('note_id', Integer, ForeignKey("NotesCreated.note_id"), nullable=False, index=True)
 
-class NotesCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin, RatingsMixin):
+	@declared_attr
+	def _note_record(self):
+		return relationship( 'NotesCreated', lazy="select", foreign_keys=[self.note_id] )
+
+	@property
+	def Note(self):
+		result = self._note
+		if result is None:
+			result = self._note_record.Note
+		return result
+
+	@Note.setter
+	def Note(self, note):
+		self._note = note
+
+class NotesCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin, RatingsMixin, ReplyToMixin):
 
 	__tablename__ = 'NotesCreated'
+
+	Sharing = alias( 'sharing' )
+	NoteLength = alias( 'note_length' )
 
 	note_ds_id = Column('note_ds_id', INTID_COLUMN_TYPE, index=True, nullable=True,
 						unique=False, autoincrement=False)
@@ -53,6 +82,11 @@ class NotesCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin, RatingsMix
 	sharing = Column('sharing', SHARING_ENUMS, nullable=False)
 	note_length = Column('note_length', Integer, nullable=True)
 
+	@property
+	def Note(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.note_ds_id )
+
 class NotesViewed(Base, BaseViewMixin, NoteMixin):
 
 	__tablename__ = 'NotesViewed'
@@ -65,7 +99,8 @@ class NoteRatingMixin(CreatorMixin, RootContextMixin):
 
 	@declared_attr
 	def note_id(cls):
-		return Column('note_id', Integer, ForeignKey("NotesCreated.note_id"), nullable=False, index=True)
+		return Column('note_id', Integer, ForeignKey("NotesCreated.note_id"),
+					nullable=False, index=True)
 
 class NoteFavorites(Base, BaseTableMixin, NoteRatingMixin):
 
@@ -93,6 +128,11 @@ class HighlightsCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin):
 	highlight_id = Column('highlight_id', Integer, Sequence('highlight_seq'), index=True,
 						  nullable=False, primary_key=True)
 
+	@property
+	def Highlight(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.highlight_ds_id )
+
 class BookmarksCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin):
 	"""
 	Store bookmarks on content objects.
@@ -104,3 +144,8 @@ class BookmarksCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin):
 
 	bookmark_id = Column('bookmark_id', Integer, Sequence('bookmark_seq'), index=True,
 						 nullable=False, primary_key=True)
+
+	@property
+	def Bookmark(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.bookmark_ds_id )

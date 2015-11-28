@@ -13,9 +13,17 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declared_attr
+
+from zope import component
+
+from nti.common.property import alias
+
+from .interfaces import IAnalyticsIntidIdentifier
 
 from .meta_mixins import DeletedMixin
 from .meta_mixins import BaseTableMixin
@@ -34,6 +42,14 @@ class FriendMixin(object):
 	@declared_attr
 	def target_id(cls):
 		return Column('target_id', Integer, ForeignKey("Users.user_id"), index=True)
+
+	@declared_attr
+	def _target_record(self):
+		return relationship( 'Users', lazy="select", foreign_keys=[self.target_id] )
+
+	@property
+	def _target_entity(self):
+		return self._target_record.user
 
 class FriendsListMixin(object):
 
@@ -66,6 +82,11 @@ class DynamicFriendsListsCreated(Base, BaseTableMixin, DeletedMixin):
 
 	dfl_ds_id = Column('dfl_ds_id', INTID_COLUMN_TYPE, index=True, nullable=True, autoincrement=False)
 	dfl_id = Column('dfl_id', Integer, Sequence('dfl_seq'), index=True, nullable=False, primary_key=True)
+
+	@property
+	def Group(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.dfl_ds_id )
 
 class DynamicFriendsListsMemberAdded(Base, BaseTableMixin, DynamicFriendsListMixin, FriendMixin):
 
@@ -115,6 +136,8 @@ class ContactsAdded(Base, BaseTableMixin, FriendMixin):
 	__table_args__ = (
 		PrimaryKeyConstraint('user_id', 'target_id'),
 	)
+
+	Contact = alias( '_target_entity' )
 
 class ContactsRemoved(Base, BaseTableMixin, FriendMixin):
 

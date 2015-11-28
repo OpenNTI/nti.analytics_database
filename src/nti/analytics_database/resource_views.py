@@ -17,6 +17,8 @@ from sqlalchemy import Boolean
 
 from sqlalchemy.schema import Sequence
 
+from nti.common.property import alias
+
 from .meta_mixins import ResourceMixin
 from .meta_mixins import BaseTableMixin
 from .meta_mixins import TimeLengthMixin
@@ -37,6 +39,9 @@ class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
 class VideoEvents(Base, ResourceViewMixin, TimeLengthMixin):
 
 	__tablename__ = 'VideoEvents'
+	VideoStartTime = alias( 'video_start_time' )
+	VideoEndTime = alias( 'video_end_time' )
+	WithTranscript = alias( 'with_transcript' )
 
 	video_event_type = Column('video_event_type', Enum('WATCH', 'SKIP'), nullable=False)
 	# seconds from beginning of video (time 0s)

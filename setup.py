@@ -28,6 +28,7 @@ setup(
 	package_dir={'': 'src'},
 	namespace_packages=['nti'],
 	install_requires=[
+		'nti.common',
 		'setuptools',
 		'sqlalchemy'
 	],

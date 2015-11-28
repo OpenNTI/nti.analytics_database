@@ -21,18 +21,26 @@ from sqlalchemy.schema import Sequence
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
+from zope import component
+
+from nti.common.property import alias
+
+from .interfaces import IAnalyticsIntidIdentifier
+
 from .meta_mixins import CourseMixin
 from .meta_mixins import DeletedMixin
 from .meta_mixins import BaseViewMixin
 from .meta_mixins import BaseTableMixin
 from .meta_mixins import TimeLengthMixin
-from .meta_mixins import RootContextMixin
+from .meta_mixins import ResourceMixin
 
 from . import Base
 from . import NTIID_COLUMN_TYPE
 from . import INTID_COLUMN_TYPE
 
 class AssignmentIdMixin(object):
+
+	AssessmentId = AssignmentId = alias( 'assignment_id' )
 
 	@declared_attr
 	def assignment_id(cls):
@@ -43,6 +51,10 @@ class AssignmentMixin(BaseTableMixin, CourseMixin, TimeLengthMixin, AssignmentId
 
 class AssignmentsTaken(Base, AssignmentMixin):
 	__tablename__ = 'AssignmentsTaken'
+
+	IsLate = alias( 'is_late' )
+	Details = alias( 'details' )
+
 	submission_id = Column('submission_id', INTID_COLUMN_TYPE, nullable=True, index=True, autoincrement=False)
 
 	assignment_taken_id = Column('assignment_taken_id', Integer, Sequence('assignments_taken_seq'),
@@ -51,7 +63,26 @@ class AssignmentsTaken(Base, AssignmentMixin):
 	# We may have multiple grades in the future.
 	grade = relationship('AssignmentGrades', uselist=False, lazy='joined')
 
+	details = relationship('AssignmentDetails', uselist=True, lazy="select")
+
 	is_late = Column('is_late', Boolean, nullable=True)
+
+	@property
+	def GradeNum(self):
+		return self.grade and self.grade.grade_num
+
+	@property
+	def Grade(self):
+		return self.grade and self.grade.grade
+
+	@property
+	def Grader(self):
+		return self.grade and self.grade.grader
+
+	@property
+	def Submission(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.submission_id )
 
 class AssignmentSubmissionMixin(BaseTableMixin):
 
@@ -60,10 +91,26 @@ class AssignmentSubmissionMixin(BaseTableMixin):
 		return Column('assignment_taken_id',
 					  Integer,
 					  ForeignKey("AssignmentsTaken.assignment_taken_id"),
-					  nullable=False, 
+					  nullable=False,
 					  index=True)
 
+import json
+def _load_response( value ):
+	"For a database response value, transform it into a useable state."
+	response = json.loads( value )
+	if isinstance( response, dict ):
+		# Convert to int keys, if possible.
+		# We currently do not handle mixed types of keys.
+		try:
+			response = {int( x ): y for x,y in response.items()}
+		except ValueError:
+			pass
+	return response
+
 class DetailMixin(TimeLengthMixin):
+
+	QuestionId = alias( 'question_id' )
+	QuestionPartId = alias( 'question_part_id' )
 
 	# Counting on these parts/ids being integers.
 	# Max length of 114 as of 8.1.14
@@ -80,7 +127,15 @@ class DetailMixin(TimeLengthMixin):
 		# Null if left blank
 		return Column('submission', Text, nullable=True)  # (Freeform|MapEntry|Index|List)
 
+	@property
+	def Answer(self):
+		return _load_response( self.submission )
+
 class GradeMixin(object):
+
+	# FIXME user object
+	Grader = alias( 'Grader' )
+	Grade = alias( 'grade' )
 
 	# Could be a lot of types: 7, 7/10, 95, 95%, A-, 90 A
 	@declared_attr
@@ -99,6 +154,8 @@ class GradeMixin(object):
 
 class GradeDetailMixin(GradeMixin):
 
+	IsCorrect = alias( 'is_correct' )
+
 	# For multiple choice types
 	@declared_attr
 	def is_correct(cls):
@@ -108,11 +165,23 @@ class AssignmentDetails(Base, DetailMixin, AssignmentSubmissionMixin):
 
 	__tablename__ = 'AssignmentDetails'
 
-	assignment_details_id = Column('assignment_details_id', 
+	assignment_details_id = Column('assignment_details_id',
 									Integer,
-									Sequence('assignment_details_seq'), 
+									Sequence('assignment_details_seq'),
 									primary_key=True)
 	grade = relationship('AssignmentDetailGrades', uselist=False, lazy='joined')
+
+	@property
+	def IsCorrect(self):
+		return self.grade and self.grade.IsCorrect
+
+	@property
+	def Grade(self):
+		return self.grade and self.grade.grade
+
+	@property
+	def Grader(self):
+		return self.grade and self.grade.grader
 
 class AssignmentGrades(Base, AssignmentSubmissionMixin, GradeMixin):
 	__tablename__ = 'AssignmentGrades'
@@ -126,10 +195,10 @@ class AssignmentDetailGrades(Base, GradeDetailMixin, AssignmentSubmissionMixin):
 	question_id = Column('question_id', NTIID_COLUMN_TYPE, nullable=False)
 	question_part_id = Column('question_part_id', INTID_COLUMN_TYPE, nullable=True, autoincrement=False)
 
-	assignment_details_id = Column('assignment_details_id', 
+	assignment_details_id = Column('assignment_details_id',
 								   Integer,
-								   ForeignKey("AssignmentDetails.assignment_details_id"), 
-								   unique=True, 
+								   ForeignKey("AssignmentDetails.assignment_details_id"),
+								   unique=True,
 								   primary_key=True)
 
 # Each feedback 'tree' should have an associated grade with it.
@@ -150,6 +219,11 @@ class SelfAssessmentsTaken(Base, AssignmentMixin):
 	self_assessment_id = Column('self_assessment_id', Integer, Sequence('self_assessment_seq'),
 								index=True, nullable=False, primary_key=True)
 
+	@property
+	def Submission(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.submission_id )
+
 # SelfAssessments will not have feedback or multiple graders
 class SelfAssessmentDetails(Base, BaseTableMixin, DetailMixin, GradeDetailMixin):
 
@@ -158,27 +232,39 @@ class SelfAssessmentDetails(Base, BaseTableMixin, DetailMixin, GradeDetailMixin)
 							ForeignKey("SelfAssessmentsTaken.self_assessment_id"),
 							nullable=False, index=True)
 
-	self_assessment_details_id = Column('self_assessment_details_id', 
+	self_assessment_details_id = Column('self_assessment_details_id',
 										Integer,
 										Sequence('self_assessment_details_seq'),
 										primary_key=True)
 
-class AssignmentViewMixin(AssignmentIdMixin, RootContextMixin, BaseViewMixin, TimeLengthMixin):
+class AssignmentViewMixin(AssignmentIdMixin, ResourceMixin, BaseViewMixin, TimeLengthMixin):
 
+	# FIXME Add foreign key in migration
 	@declared_attr
 	def resource_id(cls):
-		return Column('resource_id', Integer, nullable=True)
+		return Column('resource_id', Integer,
+					ForeignKey("Resources.resource_id"),
+					nullable=True)
+
+	@property
+	def ResourceId(self):
+		result = self._resource
+		if result is not None:
+			result = self._resource.resource_ds_id
+		return result
 
 class SelfAssessmentViews(Base, AssignmentViewMixin):
 
 	__tablename__ = 'SelfAssessmentViews'
-	self_assessment_view_id = Column('self_assessment_view_id', Integer,
-									 Sequence('self_assessment_view_id_seq'), primary_key=True)
+	self_assessment_view_id = Column('self_assessment_view_id',
+									Integer,
+									 Sequence('self_assessment_view_id_seq'),
+									 primary_key=True)
 
 class AssignmentViews(Base, AssignmentViewMixin):
 
 	__tablename__ = 'AssignmentViews'
-	assignment_view_id = Column('assignment_view_id', 
+	assignment_view_id = Column('assignment_view_id',
 								Integer,
 								Sequence('assignment_view_id_seq'),
 								primary_key=True)

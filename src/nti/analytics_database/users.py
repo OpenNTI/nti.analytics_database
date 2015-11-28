@@ -17,6 +17,10 @@ from sqlalchemy import DateTime
 
 from sqlalchemy.schema import Sequence
 
+from zope import component
+
+from .interfaces import IAnalyticsIntidIdentifier
+
 from . import Base
 from . import INTID_COLUMN_TYPE
 
@@ -30,3 +34,8 @@ class Users(Base):
 	username = Column('username', String(64), nullable=True, unique=False, index=True)
 	username2 = Column('username2', String(64), nullable=True, unique=False)
 	create_date = Column('create_date', DateTime, nullable=True)
+
+	@property
+	def user(self):
+		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
+		return id_utility.get_object( self.user_ds_id )
