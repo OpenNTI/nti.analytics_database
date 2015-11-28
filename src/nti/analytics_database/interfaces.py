@@ -59,3 +59,11 @@ class IAnalyticsRootContextResolver(interface.Interface):
 
 	def __call__(rc_id):
 		pass
+
+class IAnalyticsContextPathExpander(interface.Interface):
+	"""
+	Marker interface to expand context paths
+	"""
+
+	def expand(path):
+		pass

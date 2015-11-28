@@ -28,6 +28,7 @@ from nti.common.property import alias
 
 from .interfaces import IAnalyticsUserResolver
 from .interfaces import IAnalyticsIntidIdentifier
+from .interfaces import IAnalyticsContextPathExpander
 from .interfaces import IAnalyticsRootContextResolver
 
 from . import INTID_COLUMN_TYPE
@@ -91,8 +92,10 @@ class BaseViewMixin(UserMixin):
 
 	@property
 	def ContextPath(self):
-		from nti.analytics.database._utils import expand_context_path
-		return expand_context_path(self.context_path)
+		expander = component.queryUtility(IAnalyticsContextPathExpander)
+		if expander is not None:
+			return expander.expand(self.context_path)
+		return self.context_path
 
 class DeletedMixin(object):
 
@@ -100,7 +103,8 @@ class DeletedMixin(object):
 
 class CourseMixin(object):
 
-	course_id = Column('course_id', Integer, nullable=False, index=True, autoincrement=False)
+	course_id = Column('course_id', Integer, nullable=False, index=True, 
+					   autoincrement=False)
 
 	@declared_attr
 	def __table_args__(cls):
@@ -112,7 +116,9 @@ class RootContextMixin(object):
 
 	entity_root_context_id = Column('entity_root_context_id', Integer,
 									nullable=True, index=True, autoincrement=False)
-	course_id = Column('course_id', Integer, nullable=True, index=True, autoincrement=False)
+
+	course_id = Column('course_id', Integer, nullable=True, index=True,
+					    autoincrement=False)
 
 	@property
 	def RootContext(self):
@@ -237,7 +243,8 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 	# comment_id should be the DS intid
 	@declared_attr
 	def comment_id(cls):
-		return Column('comment_id', INTID_COLUMN_TYPE, index=True, nullable=False, autoincrement=False)
+		return Column('comment_id', INTID_COLUMN_TYPE, index=True, nullable=False, 
+					  autoincrement=False)
 
 	@declared_attr
 	def comment_length(cls):
@@ -245,5 +252,5 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 
 	@property
 	def Comment(self):
-		id_utility = component.getUtility(IAnalyticsIntidIdentifier)
-		return id_utility.get_object(self.comment_id)
+		id_util = component.queryUtility(IAnalyticsIntidIdentifier)
+		return id_util.get_object(self.comment_id) if id_util is not None else None
