@@ -11,8 +11,8 @@ logger = __import__('logging').getLogger(__name__)
 
 from sqlalchemy import Column
 from sqlalchemy import String
-from sqlalchemy import Integer
 from sqlalchemy import Boolean
+from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 
@@ -24,11 +24,11 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from zope import component
 
-from nti.analytics.database._utils import get_root_context_obj
-
 from nti.common.property import alias
 
+from .interfaces import IAnalyticsUserResolver
 from .interfaces import IAnalyticsIntidIdentifier
+from .interfaces import IAnalyticsRootContextResolver
 
 from . import INTID_COLUMN_TYPE
 from . import SESSION_COLUMN_TYPE
@@ -39,7 +39,7 @@ class UserMixin(object):
 
 	@declared_attr
 	def _user_record(self):
-		return relationship( 'Users', lazy="select", foreign_keys=[self.user_id] )
+		return relationship('Users', lazy="select", foreign_keys=[self.user_id])
 
 	@property
 	def user(self):
@@ -54,28 +54,31 @@ class UserMixin(object):
 
 class BaseTableMixin(UserMixin):
 
-	SessionID = alias( 'session_id' )
+	SessionID = alias('session_id')
 
 	# For migrating data, we may not have sessions (or timestamps); thus this is optional.
 	@declared_attr
 	def session_id(cls):
-		return Column('session_id', SESSION_COLUMN_TYPE, ForeignKey("Sessions.session_id"), nullable=True)
+		return Column('session_id', SESSION_COLUMN_TYPE, 
+					  ForeignKey("Sessions.session_id"), nullable=True)
 
 	@declared_attr
 	def user_id(cls):
-		return Column('user_id', Integer, ForeignKey("Users.user_id"), index=True, nullable=True)
+		return Column('user_id', Integer, ForeignKey("Users.user_id"), 
+					  index=True, nullable=True)
 
 	timestamp = Column('timestamp', DateTime, nullable=True, index=True)
 
 class BaseViewMixin(UserMixin):
 
-	SessionID = alias( 'session_id' )
+	SessionID = alias('session_id')
 
 	# For resource views, we need timestamp to be non-null for primary key purposes.
 	# It will have to be fine-grain to avoid collisions.
 	@declared_attr
 	def session_id(cls):
-		return Column('session_id', SESSION_COLUMN_TYPE, ForeignKey("Sessions.session_id"), nullable=True)
+		return Column('session_id', SESSION_COLUMN_TYPE, 
+					  ForeignKey("Sessions.session_id"), nullable=True)
 
 	@declared_attr
 	def user_id(cls):
@@ -89,7 +92,7 @@ class BaseViewMixin(UserMixin):
 	@property
 	def ContextPath(self):
 		from nti.analytics.database._utils import expand_context_path
-		return expand_context_path( self.context_path )
+		return expand_context_path(self.context_path)
 
 class DeletedMixin(object):
 
@@ -115,7 +118,8 @@ class RootContextMixin(object):
 	def RootContext(self):
 		result = self._RootContext
 		if result is None:
-			result = get_root_context_obj( self )
+			resolver = component.queryUtility(IAnalyticsRootContextResolver)
+			result = resolver(self) if resolver is not None else None
 		return result
 
 	@RootContext.setter
@@ -128,11 +132,12 @@ class ResourceMixin(RootContextMixin):
 
 	@declared_attr
 	def _resource(self):
-		return relationship( 'Resources', lazy="select" )
+		return relationship('Resources', lazy="select")
 
 	@declared_attr
 	def resource_id(cls):
-		return Column('resource_id', Integer, ForeignKey("Resources.resource_id"), nullable=False, index=True)
+		return Column('resource_id', Integer, ForeignKey("Resources.resource_id"),
+					  nullable=False, index=True)
 
 	@property
 	def ResourceId(self):
@@ -151,14 +156,14 @@ class ResourceViewMixin(ResourceMixin, BaseViewMixin):
 
 class FavoriteMixin(object):
 
-	FavoriteCount = alias( 'favorite_count' )
+	FavoriteCount = alias('favorite_count')
 
 	favorite_count = Column('favorite_count', Integer, nullable=True)
 
 class RatingsMixin(FavoriteMixin):
 
-	Flagged = alias( 'is_flagged' )
-	LikeCount = alias( 'like_count' )
+	Flagged = alias('is_flagged')
+	LikeCount = alias('like_count')
 
 	is_flagged = Column('is_flagged', Boolean, nullable=True)
 
@@ -176,7 +181,7 @@ class CreatorMixin(object):
 
 	@declared_attr
 	def _creator_record(self):
-		return relationship( 'Users', lazy="select", foreign_keys=[self.creator_id] )
+		return relationship('Users', lazy="select", foreign_keys=[self.creator_id])
 
 	@property
 	def ObjectCreator(self):
@@ -192,11 +197,11 @@ class CreatorMixin(object):
 # Time length in seconds
 class TimeLengthMixin(object):
 
-	Duration = alias( 'time_length' )
+	Duration = alias('time_length')
 
 	time_length = Column('time_length', Integer, nullable=True)
 
-class ReplyToMixin( object ):
+class ReplyToMixin(object):
 
 	_replied_to_user = None
 
@@ -211,14 +216,14 @@ class ReplyToMixin( object ):
 
 	@property
 	def IsReply(self):
-		return bool( self.parent_id is not None )
+		return bool(self.parent_id is not None)
 
 	@property
 	def RepliedToUser(self):
 		result = self._replied_to_user
 		if result is None and self.parent_user_id:
-			from nti.analytics.database.users import get_user
-			result = get_user( self.parent_user_id )
+			resolver = component.queryUtility(IAnalyticsUserResolver)
+			result = resolver(self.parent_user_id) if resolver is not None else None
 		return result
 
 	@RepliedToUser.setter
@@ -227,7 +232,7 @@ class ReplyToMixin( object ):
 
 class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 
-	CommentLength = alias( 'comment_length' )
+	CommentLength = alias('comment_length')
 
 	# comment_id should be the DS intid
 	@declared_attr
@@ -240,5 +245,5 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 
 	@property
 	def Comment(self):
-		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
-		return id_utility.get_object( self.comment_id )
+		id_utility = component.getUtility(IAnalyticsIntidIdentifier)
+		return id_utility.get_object(self.comment_id)

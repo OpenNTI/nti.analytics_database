@@ -6,6 +6,8 @@ $Id$
 from __future__ import print_function, unicode_literals, absolute_import, division
 __docformat__ = "restructuredtext en"
 
+logger = __import__('logging').getLogger(__name__)
+
 from zope import interface
 
 class IAnalyticsDSIdentifier(interface.Interface):
@@ -26,18 +28,34 @@ class IAnalyticsDSIdentifier(interface.Interface):
 		dataserver object.
 		"""
 
-class IAnalyticsNTIIDIdentifier( IAnalyticsDSIdentifier ):
+class IAnalyticsNTIIDIdentifier(IAnalyticsDSIdentifier):
 	"""
 	``IAnalyticsDSIdentifier`` for NTIIDs.
 	"""
 
-class IAnalyticsIntidIdentifier( IAnalyticsDSIdentifier ):
+class IAnalyticsIntidIdentifier(IAnalyticsDSIdentifier):
 	"""
 	``IAnalyticsDSIdentifier`` for ds intids.
 	"""
 
-class IAnalyticsRootContextIdentifier( IAnalyticsDSIdentifier ):
+class IAnalyticsRootContextIdentifier(IAnalyticsDSIdentifier):
 	"""
 	``IAnalyticsDSIdentifier`` for root context objects, which may
 	resolve into courses or books.
 	"""
+
+class IAnalyticsUserResolver(interface.Interface):
+	"""
+	Marker interface to resolve analytics users
+	"""
+
+	def __call__(user_id):
+		pass
+
+class IAnalyticsRootContextResolver(interface.Interface):
+	"""
+	Marker interface to resolve root context objects
+	"""
+
+	def __call__(rc_id):
+		pass
