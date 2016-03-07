@@ -9,6 +9,8 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
+import json
+
 from sqlalchemy import Text
 from sqlalchemy import Float
 from sqlalchemy import Column
@@ -94,9 +96,8 @@ class AssignmentSubmissionMixin(BaseTableMixin):
 					  nullable=False,
 					  index=True)
 
-import json
 def _load_response( value ):
-	"For a database response value, transform it into a useable state."
+	"""For a database response value, transform it into a useable state."""
 	response = json.loads( value )
 	if isinstance( response, dict ):
 		# Convert to int keys, if possible.
