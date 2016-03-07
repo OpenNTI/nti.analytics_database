@@ -44,14 +44,6 @@ class IAnalyticsRootContextIdentifier(IAnalyticsDSIdentifier):
 	resolve into courses or books.
 	"""
 
-class IAnalyticsUserResolver(interface.Interface):
-	"""
-	Marker interface to resolve analytics users
-	"""
-
-	def __call__(user_id):
-		pass
-
 class IAnalyticsRootContextResolver(interface.Interface):
 	"""
 	Marker interface to resolve root context objects
@@ -60,10 +52,3 @@ class IAnalyticsRootContextResolver(interface.Interface):
 	def __call__(rc_id):
 		pass
 
-class IAnalyticsContextPathExpander(interface.Interface):
-	"""
-	Marker interface to expand context paths
-	"""
-
-	def __call__(path):
-		pass

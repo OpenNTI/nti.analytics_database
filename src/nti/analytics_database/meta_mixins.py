@@ -16,23 +16,22 @@ from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.ext.declarative import declared_attr
+
 from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Index
-
-from sqlalchemy.ext.declarative import declared_attr
 
 from zope import component
 
 from nti.common.property import alias
 
-from .interfaces import IAnalyticsUserResolver
-from .interfaces import IAnalyticsIntidIdentifier
-from .interfaces import IAnalyticsContextPathExpander
-from .interfaces import IAnalyticsRootContextResolver
+from nti.analytics_database import INTID_COLUMN_TYPE
+from nti.analytics_database import SESSION_COLUMN_TYPE
+from nti.analytics_database import CONTEXT_PATH_SEPARATOR
 
-from . import INTID_COLUMN_TYPE
-from . import SESSION_COLUMN_TYPE
+from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
+from nti.analytics_database.interfaces import IAnalyticsRootContextResolver
 
 class UserMixin(object):
 
@@ -92,10 +91,10 @@ class BaseViewMixin(UserMixin):
 
 	@property
 	def ContextPath(self):
-		expander = component.queryUtility(IAnalyticsContextPathExpander)
-		if expander is not None:
-			return expander(self.context_path)
-		return self.context_path
+		result = self.context_path
+		if result:
+			result = result.split( CONTEXT_PATH_SEPARATOR )
+		return result
 
 class DeletedMixin(object):
 
