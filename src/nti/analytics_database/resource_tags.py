@@ -77,8 +77,6 @@ class NotesCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin, RatingsMix
 					 nullable=False, primary_key=True)
 
 	# Parent-id should be other notes; top-level notes will have null parent_ids
-	parent_id = Column('parent_id', Integer, nullable=True)
-	parent_user_id = Column('parent_user_id', Integer, index=True, nullable=True)
 	sharing = Column('sharing', SHARING_ENUMS, nullable=False)
 	note_length = Column('note_length', Integer, nullable=True)
 

@@ -60,12 +60,12 @@ class BaseTableMixin(UserMixin):
 	# For migrating data, we may not have sessions (or timestamps); thus this is optional.
 	@declared_attr
 	def session_id(cls):
-		return Column('session_id', SESSION_COLUMN_TYPE, 
+		return Column('session_id', SESSION_COLUMN_TYPE,
 					  ForeignKey("Sessions.session_id"), nullable=True)
 
 	@declared_attr
 	def user_id(cls):
-		return Column('user_id', Integer, ForeignKey("Users.user_id"), 
+		return Column('user_id', Integer, ForeignKey("Users.user_id"),
 					  index=True, nullable=True)
 
 	timestamp = Column('timestamp', DateTime, nullable=True, index=True)
@@ -78,7 +78,7 @@ class BaseViewMixin(UserMixin):
 	# It will have to be fine-grain to avoid collisions.
 	@declared_attr
 	def session_id(cls):
-		return Column('session_id', SESSION_COLUMN_TYPE, 
+		return Column('session_id', SESSION_COLUMN_TYPE,
 					  ForeignKey("Sessions.session_id"), nullable=True)
 
 	@declared_attr
@@ -103,7 +103,7 @@ class DeletedMixin(object):
 
 class CourseMixin(object):
 
-	course_id = Column('course_id', Integer, nullable=False, index=True, 
+	course_id = Column('course_id', Integer, nullable=False, index=True,
 					   autoincrement=False)
 
 	@declared_attr
@@ -217,8 +217,12 @@ class ReplyToMixin(object):
 		return Column('parent_id', INTID_COLUMN_TYPE)
 
 	@declared_attr
+	def _parent_user_record(self):
+		return relationship( 'Users', lazy="select", foreign_keys=[self.parent_user_id] )
+
+	@declared_attr
 	def parent_user_id(cls):
-		return Column('parent_user_id', Integer, index=True, nullable=True)
+		return Column('parent_user_id', Integer, ForeignKey("Users.user_id"), index=True, nullable=True)
 
 	@property
 	def IsReply(self):
@@ -227,9 +231,8 @@ class ReplyToMixin(object):
 	@property
 	def RepliedToUser(self):
 		result = self._replied_to_user
-		if result is None and self.parent_user_id:
-			resolver = component.queryUtility(IAnalyticsUserResolver)
-			result = resolver(self.parent_user_id) if resolver is not None else None
+		if result is None and self._parent_user_record:
+			result = self._parent_user_record.user
 		return result
 
 	@RepliedToUser.setter
@@ -243,7 +246,7 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 	# comment_id should be the DS intid
 	@declared_attr
 	def comment_id(cls):
-		return Column('comment_id', INTID_COLUMN_TYPE, index=True, nullable=False, 
+		return Column('comment_id', INTID_COLUMN_TYPE, index=True, nullable=False,
 					  autoincrement=False)
 
 	@declared_attr
