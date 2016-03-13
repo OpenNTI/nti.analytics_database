@@ -24,19 +24,20 @@ from zope import component
 
 from nti.common.property import alias
 
-from .interfaces import IAnalyticsIntidIdentifier
+from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
-from .meta_mixins import CreatorMixin
-from .meta_mixins import RatingsMixin
-from .meta_mixins import DeletedMixin
-from .meta_mixins import BaseViewMixin
-from .meta_mixins import ResourceMixin
-from .meta_mixins import BaseTableMixin
-from .meta_mixins import RootContextMixin
-from .meta_mixins import ReplyToMixin
+from nti.analytics_database.meta_mixins import CreatorMixin
+from nti.analytics_database.meta_mixins import RatingsMixin
+from nti.analytics_database.meta_mixins import DeletedMixin
+from nti.analytics_database.meta_mixins import BaseViewMixin
+from nti.analytics_database.meta_mixins import ResourceMixin
+from nti.analytics_database.meta_mixins import BaseTableMixin
+from nti.analytics_database.meta_mixins import RootContextMixin
+from nti.analytics_database.meta_mixins import ReplyToMixin
+from nti.analytics_database.meta_mixins import FileMimeTypeMixin
 
-from . import Base
-from . import INTID_COLUMN_TYPE
+from nti.analytics_database import Base
+from nti.analytics_database import INTID_COLUMN_TYPE
 
 SHARING_ENUMS = Enum('GLOBAL', 'PRIVATE_COURSE', 'PUBLIC_COURSE', 'PRIVATE', 'OTHER')
 
@@ -84,6 +85,33 @@ class NotesCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin, RatingsMix
 	def Note(self):
 		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
 		return id_utility.get_object( self.note_ds_id )
+
+	_file_mime_types = relationship( 'NotesUserFileUploadMimeTypes', lazy="select" )
+
+	@property
+	def FileMimeTypes(self):
+		result = {}
+		mime_types = self._file_mime_types
+		if mime_types:
+			for mime_type in mime_types:
+				result[mime_type.mime_type] = mime_type.count
+		return result
+
+class NotesUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
+
+	__tablename__ = 'NotesUserFileUploadMimeTypes'
+
+	@declared_attr
+	def note_id(cls):
+		return Column('note_id', Integer, ForeignKey("NotesCreated.note_id"),
+					nullable=False, index=True)
+
+	note_file_upload_mime_type_id = Column(	'note_file_upload_mime_type_id',
+											Integer,
+											Sequence('note_file_upload_seq'),
+											index=True,
+					 						nullable=False,
+					 						primary_key=True)
 
 class NotesViewed(Base, BaseViewMixin, NoteMixin):
 

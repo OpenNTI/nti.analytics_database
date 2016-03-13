@@ -100,6 +100,10 @@ class DeletedMixin(object):
 
 	deleted = Column('deleted', DateTime)
 
+class ReferrerMixin(object):
+
+	referrer = Column('referrer', String(256), nullable=True, index=False)
+
 class CourseMixin(object):
 
 	course_id = Column('course_id', Integer, nullable=False, index=True,
@@ -199,8 +203,10 @@ class CreatorMixin(object):
 	def ObjectCreator(self, creator):
 		self._creator = creator
 
-# Time length in seconds
 class TimeLengthMixin(object):
+	"""
+	A mixin that captures time_length/Duration in seconds.
+	"""
 
 	Duration = alias('time_length')
 
@@ -256,3 +262,29 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 	def Comment(self):
 		id_util = component.queryUtility(IAnalyticsIntidIdentifier)
 		return id_util.get_object(self.comment_id) if id_util is not None else None
+
+class FileMimeTypeMixin(object):
+
+	Count = alias('count')
+	MimeType = alias('mime_type')
+
+	@declared_attr
+	def count(cls):
+		return Column('count', Integer, index=False, nullable=False,
+					  autoincrement=False)
+
+	@declared_attr
+	def file_mime_type_id(cls):
+		return Column(	'file_mime_type_id', Integer,
+						ForeignKey("FileMimeTypes.file_mime_type_id"),
+						nullable=False,
+						autoincrement=False,
+						index=True)
+
+	@declared_attr
+	def _mime_type(self):
+		return relationship( 'FileMimeTypes', lazy="select" )
+
+	@property
+	def mime_type(self):
+		return self._mime_type.mime_type

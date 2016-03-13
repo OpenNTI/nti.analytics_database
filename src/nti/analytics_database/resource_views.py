@@ -14,17 +14,24 @@ from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import Boolean
+from sqlalchemy import ForeignKey
+
+from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 
 from nti.common.property import alias
 
-from .meta_mixins import ResourceMixin
-from .meta_mixins import BaseTableMixin
-from .meta_mixins import TimeLengthMixin
-from .meta_mixins import ResourceViewMixin
+from nti.analytics_database.meta_mixins import CreatorMixin
+from nti.analytics_database.meta_mixins import BaseViewMixin
+from nti.analytics_database.meta_mixins import ReferrerMixin
+from nti.analytics_database.meta_mixins import ResourceMixin
+from nti.analytics_database.meta_mixins import BaseTableMixin
+from nti.analytics_database.meta_mixins import TimeLengthMixin
+from nti.analytics_database.meta_mixins import ResourceViewMixin
 
-from . import Base
+from nti.analytics_database import Base
+from nti.analytics_database import INTID_COLUMN_TYPE
 
 class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
 
@@ -63,3 +70,24 @@ class VideoPlaySpeedEvents(Base, BaseTableMixin, ResourceMixin):
 
 	# Optionally link to an actual video event, if possible.
 	video_view_id = Column('video_view_id', Integer, nullable=True, index=True)
+
+class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin):
+	"""
+	Stores analytics when users view other users' uploaded files, in UGD, topics,
+	or blogs.
+	"""
+
+	__tablename__ = 'UserFileUploadViewEvents'
+	file_view_id = Column('file_view_id', Integer, Sequence('file_view_id_seq'), primary_key=True)
+	file_ds_id = Column('file_ds_id', INTID_COLUMN_TYPE, nullable=True)
+	file_mime_type_id = Column(	'file_mime_type_id', Integer,
+								ForeignKey("FileMimeTypes.file_mime_type_id"),
+								nullable=False,
+								autoincrement=False,
+								index=True)
+
+	_file_mime_type = relationship( 'FileMimeTypes', lazy="select" )
+
+	@property
+	def mime_type(self):
+		return self._file_mime_type_id.mime_type
