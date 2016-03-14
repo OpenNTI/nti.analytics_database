@@ -31,7 +31,9 @@ from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import ResourceViewMixin
 
 from nti.analytics_database import Base
-from nti.analytics_database import INTID_COLUMN_TYPE
+from nti.analytics_database import NTIID_COLUMN_TYPE
+
+from nti.ntiids.ntiids import find_object_with_ntiid
 
 class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
 
@@ -79,7 +81,7 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
 
 	__tablename__ = 'UserFileUploadViewEvents'
 	file_view_id = Column('file_view_id', Integer, Sequence('file_view_id_seq'), primary_key=True)
-	file_ds_id = Column('file_ds_id', INTID_COLUMN_TYPE, nullable=True)
+	file_ds_id = Column('file_ds_id', NTIID_COLUMN_TYPE, nullable=True)
 	file_mime_type_id = Column(	'file_mime_type_id', Integer,
 								ForeignKey("FileMimeTypes.file_mime_type_id"),
 								nullable=False,
@@ -91,3 +93,7 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
 	@property
 	def mime_type(self):
 		return self._file_mime_type_id.mime_type
+
+	@property
+	def FileObject(self):
+		return find_object_with_ntiid( self.file_ds_id )
