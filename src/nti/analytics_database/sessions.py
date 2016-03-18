@@ -20,8 +20,8 @@ from sqlalchemy.schema import Sequence
 
 from nti.common.property import alias
 
-from . import Base
-from . import SESSION_COLUMN_TYPE
+from nti.analytics_database import Base
+from nti.analytics_database import SESSION_COLUMN_TYPE
 
 class Sessions(Base):
 
@@ -49,16 +49,13 @@ class Sessions(Base):
 
 class IpGeoLocation(Base):
 
-	# FIXME: Since there is a table dedicated to storing locations, it would
+	# TODO: Since there is a table dedicated to storing locations, it would
 	# make sense to rename this table to IpLocation or something similar, to
 	# indicate that this table stores a list of distinct IPs, but not their
 	# geographical locations.
 	__tablename__ = 'IpGeoLocation'
 
-	# Store ip_addr and country code, with lat/long.
-	# We can use 'geopy.geocoders' to lookup state/postal_code data
-	# from lat/long.  It may make sense to gather this information at
-	# read time.
+	# TODO: Remove lat/long
 	# Store by user_id for ease of lookup.
 	ip_id = Column('ip_id', Integer, Sequence('ip_id_seq'), index=True, primary_key=True)
 	user_id = Column('user_id', Integer, ForeignKey("Users.user_id"), index=True, nullable=False)
@@ -72,8 +69,7 @@ class Location(Base):
 
 	__tablename__ = 'Location'
 
-	# Stores a list of distinct locations of users,
-	# by lat/long coordinates.
+	# Stores a list of distinct locations of users, by lat/long coordinates.
 	# Each location has a unique ID.
 	location_id = Column('location_id', Integer, Sequence('location_id_seq'), primary_key=True)
 	latitude = Column('latitude', String(64))
@@ -86,7 +82,8 @@ class UserAgents(Base):
 
 	__tablename__ = 'UserAgents'
 
-	user_agent_id = Column('user_agent_id', Integer, Sequence('user_agent_id_seq'), index=True, primary_key=True)
+	user_agent_id = Column('user_agent_id', Integer, Sequence('user_agent_id_seq'),
+							index=True, primary_key=True)
 	# Indexing this large column could be fairly expensive.  Does it get us anything,
 	# or should we rely on a full column scan before inserting (perhaps also expensive)?
 	# Another alternative would be to hash this value in another column and just check that.
