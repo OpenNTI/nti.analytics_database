@@ -15,4 +15,4 @@ from nti.analytics_database.tests import AnalyticsDatabaseTest
 class TestDatabase(AnalyticsDatabaseTest):
 
     def test_database(self):
-        assert_that(self.engine.table_names(), has_length(65))
+        assert_that(self.engine.table_names(), has_length(68))

@@ -27,18 +27,19 @@ from zope import component
 
 from nti.common.property import alias
 
-from .interfaces import IAnalyticsIntidIdentifier
+from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
-from .meta_mixins import CourseMixin
-from .meta_mixins import DeletedMixin
-from .meta_mixins import BaseViewMixin
-from .meta_mixins import BaseTableMixin
-from .meta_mixins import TimeLengthMixin
-from .meta_mixins import ResourceMixin
+from nti.analytics_database.meta_mixins import CourseMixin
+from nti.analytics_database.meta_mixins import DeletedMixin
+from nti.analytics_database.meta_mixins import BaseViewMixin
+from nti.analytics_database.meta_mixins import BaseTableMixin
+from nti.analytics_database.meta_mixins import TimeLengthMixin
+from nti.analytics_database.meta_mixins import ResourceMixin
+from nti.analytics_database.meta_mixins import FileMimeTypeMixin
 
-from . import Base
-from . import NTIID_COLUMN_TYPE
-from . import INTID_COLUMN_TYPE
+from nti.analytics_database import Base
+from nti.analytics_database import NTIID_COLUMN_TYPE
+from nti.analytics_database import INTID_COLUMN_TYPE
 
 class AssignmentIdMixin(object):
 
@@ -134,8 +135,6 @@ class DetailMixin(TimeLengthMixin):
 
 class GradeMixin(object):
 
-	# FIXME user object
-	Grader = alias( 'Grader' )
 	Grade = alias( 'grade' )
 
 	# Could be a lot of types: 7, 7/10, 95, 95%, A-, 90 A
@@ -152,6 +151,14 @@ class GradeMixin(object):
 	@declared_attr
 	def grader(cls):
 		return Column('grader', Integer, ForeignKey("Users.user_id"), nullable=True, index=True)
+
+	@declared_attr
+	def _grader_record(self):
+		return relationship('Users', lazy="select", foreign_keys=[self.grader])
+
+	@property
+	def Grader(self):
+		return self._grader_record
 
 class GradeDetailMixin(GradeMixin):
 
@@ -182,7 +189,7 @@ class AssignmentDetails(Base, DetailMixin, AssignmentSubmissionMixin):
 
 	@property
 	def Grader(self):
-		return self.grade and self.grade.grader
+		return self.grade and self.grade.Grader
 
 class AssignmentGrades(Base, AssignmentSubmissionMixin, GradeMixin):
 	__tablename__ = 'AssignmentGrades'
@@ -213,6 +220,31 @@ class AssignmentFeedback(Base, AssignmentSubmissionMixin, DeletedMixin):
 	# Tie our feedback to our submission and grader.
 	grade_id = Column('grade_id', Integer, ForeignKey("AssignmentGrades.grade_id"), nullable=False)
 
+	_file_mime_types = relationship( 'FeedbackUserFileUploadMimeTypes', lazy="select" )
+
+	@property
+	def FileMimeTypes(self):
+		result = {}
+		mime_types = self._file_mime_types
+		if mime_types:
+			for mime_type in mime_types:
+				result[mime_type.mime_type] = mime_type.count
+		return result
+
+class FeedbackUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
+
+	__tablename__ = 'FeedbackUserFileUploadMimeTypes'
+
+	feedback_id = Column('feedback_id', Integer, ForeignKey("AssignmentFeedback.feedback_id"),
+					nullable=False, index=True)
+
+	feedback_file_upload_mime_type_id = Column(	'feedback_file_upload_mime_type_id',
+											Integer,
+											Sequence('feedback_file_upload_seq'),
+											index=True,
+					 						nullable=False,
+					 						primary_key=True)
+
 class SelfAssessmentsTaken(Base, AssignmentMixin):
 
 	__tablename__ = 'SelfAssessmentsTaken'
@@ -240,7 +272,6 @@ class SelfAssessmentDetails(Base, BaseTableMixin, DetailMixin, GradeDetailMixin)
 
 class AssignmentViewMixin(AssignmentIdMixin, ResourceMixin, BaseViewMixin, TimeLengthMixin):
 
-	# FIXME Add foreign key in migration
 	@declared_attr
 	def resource_id(cls):
 		return Column('resource_id', Integer,

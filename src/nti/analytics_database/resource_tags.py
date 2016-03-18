@@ -101,9 +101,7 @@ class NotesUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
 
 	__tablename__ = 'NotesUserFileUploadMimeTypes'
 
-	@declared_attr
-	def note_id(cls):
-		return Column('note_id', Integer, ForeignKey("NotesCreated.note_id"),
+	note_id = Column('note_id', Integer, ForeignKey("NotesCreated.note_id"),
 					nullable=False, index=True)
 
 	note_file_upload_mime_type_id = Column(	'note_file_upload_mime_type_id',

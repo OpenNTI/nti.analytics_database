@@ -23,18 +23,19 @@ from zope import component
 
 from nti.common.property import alias
 
-from .interfaces import IAnalyticsIntidIdentifier
+from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
-from .meta_mixins import CreatorMixin
-from .meta_mixins import DeletedMixin
-from .meta_mixins import RatingsMixin
-from .meta_mixins import BaseViewMixin
-from .meta_mixins import CommentsMixin
-from .meta_mixins import BaseTableMixin
-from .meta_mixins import TimeLengthMixin
+from nti.analytics_database.meta_mixins import CreatorMixin
+from nti.analytics_database.meta_mixins import DeletedMixin
+from nti.analytics_database.meta_mixins import RatingsMixin
+from nti.analytics_database.meta_mixins import BaseViewMixin
+from nti.analytics_database.meta_mixins import CommentsMixin
+from nti.analytics_database.meta_mixins import BaseTableMixin
+from nti.analytics_database.meta_mixins import TimeLengthMixin
+from nti.analytics_database.meta_mixins import FileMimeTypeMixin
 
-from . import Base
-from . import INTID_COLUMN_TYPE
+from nti.analytics_database import Base
+from nti.analytics_database import INTID_COLUMN_TYPE
 
 class BlogMixin(object):
 
@@ -80,6 +81,17 @@ class BlogCommentsCreated(Base, CommentsMixin, BlogMixin, RatingsMixin):
 		PrimaryKeyConstraint('comment_id'),
 	)
 
+	_file_mime_types = relationship( 'BlogCommentsUserFileUploadMimeTypes', lazy="select" )
+
+	@property
+	def FileMimeTypes(self):
+		result = {}
+		mime_types = self._file_mime_types
+		if mime_types:
+			for mime_type in mime_types:
+				result[mime_type.mime_type] = mime_type.count
+		return result
+
 class BlogFavorites(Base, BaseTableMixin, BlogMixin, CreatorMixin):
 	__tablename__ = 'BlogFavorites'
 
@@ -103,6 +115,17 @@ class BlogCommentMixin(object):
 					  ForeignKey("BlogCommentsCreated.comment_id"),
 					  nullable=False,
 					  index=True)
+
+class BlogCommentsUserFileUploadMimeTypes(Base, FileMimeTypeMixin, BlogCommentMixin):
+
+	__tablename__ = 'BlogCommentsUserFileUploadMimeTypes'
+
+	blog_comment_file_upload_mime_type_id = Column('blog_comment_file_upload_mime_type_id',
+											Integer,
+											Sequence('blog_comment_file_upload_seq'),
+											index=True,
+					 						nullable=False,
+					 						primary_key=True)
 
 class BlogCommentFavorites(Base, BaseTableMixin, BlogCommentMixin, CreatorMixin):
 
