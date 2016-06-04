@@ -13,19 +13,21 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
 
-from sqlalchemy.schema import PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declared_attr
 
-from .meta_mixins import BaseViewMixin
-from .meta_mixins import TimeLengthMixin
+from sqlalchemy.schema import PrimaryKeyConstraint
 
-from . import Base
+from nti.analytics_database import Base
+
+from nti.analytics_database.meta_mixins import BaseViewMixin
+from nti.analytics_database.meta_mixins import TimeLengthMixin
 
 class EntityProfileMixin(BaseViewMixin, TimeLengthMixin):
 
 	@declared_attr
 	def target_id(cls):
-		return Column('target_id', Integer, ForeignKey("Users.user_id"), index=True, nullable=False)
+		return Column('target_id', Integer, ForeignKey("Users.user_id"), 
+					  index=True, nullable=False)
 
 class EntityProfileViews(Base, EntityProfileMixin):
 	__tablename__ = 'EntityProfileViews'

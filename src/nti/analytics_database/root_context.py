@@ -17,8 +17,8 @@ from sqlalchemy import Interval
 
 from sqlalchemy.schema import Sequence
 
-from . import Base
-from . import NTIID_COLUMN_TYPE
+from nti.analytics_database import Base
+from nti.analytics_database import NTIID_COLUMN_TYPE
 
 class RootContext(object):
 	"""
@@ -47,10 +47,10 @@ class RootContextId(Base):
 	"""
 	A table to share a sequence between our RootContext tables; needed in mysql.
 	"""
-	
+
 	__tablename__ = 'ContextId'
-	
+
 	# Start at 100 for simple migration.
 	context_id = Column('context_id', Integer, Sequence('context_id_seq', start=1000),
 						nullable=False, primary_key=True)
-_RootContextId = RootContextId # alias BWC
+_RootContextId = RootContextId  # alias BWC
