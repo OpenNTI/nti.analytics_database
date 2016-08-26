@@ -19,13 +19,17 @@ from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy import ForeignKey
 
-from sqlalchemy.schema import Sequence
-from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
+
+from sqlalchemy.orm import relationship
+
+from sqlalchemy.schema import Sequence
 
 from zope import component
 
-from nti.common.property import alias
+from nti.analytics_database import Base
+from nti.analytics_database import NTIID_COLUMN_TYPE
+from nti.analytics_database import INTID_COLUMN_TYPE
 
 from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
@@ -37,9 +41,7 @@ from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import ResourceMixin
 from nti.analytics_database.meta_mixins import FileMimeTypeMixin
 
-from nti.analytics_database import Base
-from nti.analytics_database import NTIID_COLUMN_TYPE
-from nti.analytics_database import INTID_COLUMN_TYPE
+from nti.property.property import alias
 
 class AssignmentIdMixin(object):
 

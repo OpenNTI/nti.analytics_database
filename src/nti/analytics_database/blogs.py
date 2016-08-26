@@ -13,15 +13,14 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.ext.declarative import declared_attr
+
 from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
-from sqlalchemy.ext.declarative import declared_attr
 
 from zope import component
-
-from nti.common.property import alias
 
 from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
@@ -36,6 +35,8 @@ from nti.analytics_database.meta_mixins import FileMimeTypeMixin
 
 from nti.analytics_database import Base
 from nti.analytics_database import INTID_COLUMN_TYPE
+
+from nti.property.property import alias
 
 class BlogMixin(object):
 

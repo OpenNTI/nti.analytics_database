@@ -18,10 +18,10 @@ from sqlalchemy import ForeignKey
 
 from sqlalchemy.schema import Sequence
 
-from nti.common.property import alias
-
 from nti.analytics_database import Base
 from nti.analytics_database import SESSION_COLUMN_TYPE
+
+from nti.property.property import alias
 
 class Sessions(Base):
 

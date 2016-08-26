@@ -9,16 +9,17 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-from sqlalchemy import Column
-from sqlalchemy import Integer
 from sqlalchemy import Float
 from sqlalchemy import String
+from sqlalchemy import Column
+from sqlalchemy import Integer
+
 from sqlalchemy.schema import Sequence
 
 from nti.analytics_database import Base
 
-from nti.analytics_database.meta_mixins import RootContextMixin
 from nti.analytics_database.meta_mixins import BaseTableMixin
+from nti.analytics_database.meta_mixins import RootContextMixin
 
 class SearchQueries(Base, BaseTableMixin, RootContextMixin):
 

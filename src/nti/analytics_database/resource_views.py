@@ -20,7 +20,8 @@ from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 
-from nti.common.property import alias
+from nti.analytics_database import Base
+from nti.analytics_database import NTIID_COLUMN_TYPE
 
 from nti.analytics_database.meta_mixins import CreatorMixin
 from nti.analytics_database.meta_mixins import BaseViewMixin
@@ -30,10 +31,9 @@ from nti.analytics_database.meta_mixins import BaseTableMixin
 from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import ResourceViewMixin
 
-from nti.analytics_database import Base
-from nti.analytics_database import NTIID_COLUMN_TYPE
-
 from nti.ntiids.ntiids import find_object_with_ntiid
+
+from nti.property.property import alias
 
 class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
 
@@ -96,4 +96,5 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
 
 	@property
 	def FileObject(self):
+		# TODO: Register an utility
 		return find_object_with_ntiid( self.file_ds_id )

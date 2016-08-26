@@ -19,10 +19,10 @@ from sqlalchemy.schema import Sequence
 
 from zope import component
 
-from .interfaces import IAnalyticsIntidIdentifier
+from nti.analytics_database import Base
+from nti.analytics_database import INTID_COLUMN_TYPE
 
-from . import Base
-from . import INTID_COLUMN_TYPE
+from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
 class Users(Base):
 
@@ -37,5 +37,5 @@ class Users(Base):
 
 	@property
 	def user(self):
-		id_utility = component.getUtility( IAnalyticsIntidIdentifier )
-		return id_utility.get_object( self.user_ds_id )
+		id_utility = component.getUtility(IAnalyticsIntidIdentifier)
+		return id_utility.get_object(self.user_ds_id)

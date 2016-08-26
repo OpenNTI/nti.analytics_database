@@ -24,14 +24,14 @@ from sqlalchemy.schema import Index
 
 from zope import component
 
-from nti.common.property import alias
-
 from nti.analytics_database import INTID_COLUMN_TYPE
 from nti.analytics_database import SESSION_COLUMN_TYPE
 from nti.analytics_database import CONTEXT_PATH_SEPARATOR
 
 from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 from nti.analytics_database.interfaces import IAnalyticsRootContextResolver
+
+from nti.property.property import alias
 
 class UserMixin(object):
 

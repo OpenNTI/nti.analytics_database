@@ -14,6 +14,7 @@ from zope import component
 from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import BigInteger
+
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()

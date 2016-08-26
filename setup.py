@@ -16,13 +16,14 @@ setup(
 	description="NTI Analytics Database",
 	long_description=codecs.open('README.rst', encoding='utf-8').read(),
 	license='Proprietary',
-	keywords='pyramid preference',
+	keywords='Analytics database',
 	classifiers=[
 		'Intended Audience :: Developers',
 		'Natural Language :: English',
+		'Operating System :: OS Independent',
+		'Programming Language :: Python :: 2',
 		'Programming Language :: Python :: 2.7',
-		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.3',
+		'Programming Language :: Python :: Implementation :: CPython'
 	],
 	packages=find_packages('src'),
 	package_dir={'': 'src'},
@@ -30,7 +31,9 @@ setup(
 	install_requires=[
 		'nti.common',
 		'setuptools',
-		'sqlalchemy'
+		'sqlalchemy',
+		'nti.ntiids',
+		'nti.property'
 	],
 	entry_points=entry_points
 )
