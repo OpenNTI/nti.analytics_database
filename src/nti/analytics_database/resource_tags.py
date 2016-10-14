@@ -40,7 +40,7 @@ from nti.analytics_database import INTID_COLUMN_TYPE
 
 from nti.property.property import alias
 
-SHARING_ENUMS = Enum('GLOBAL', 'PRIVATE_COURSE', 'PUBLIC_COURSE', 'PRIVATE', 'OTHER')
+SHARING_ENUMS = Enum('GLOBAL', 'PRIVATE_COURSE', 'PUBLIC_COURSE', 'PRIVATE', 'OTHER', validate_strings=True)
 
 class NoteMixin(ResourceMixin):
 

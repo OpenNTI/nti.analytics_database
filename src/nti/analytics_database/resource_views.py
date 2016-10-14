@@ -52,7 +52,7 @@ class VideoEvents(Base, ResourceViewMixin, TimeLengthMixin):
 	VideoEndTime = alias( 'video_end_time' )
 	WithTranscript = alias( 'with_transcript' )
 
-	video_event_type = Column('video_event_type', Enum('WATCH', 'SKIP'), nullable=False)
+	video_event_type = Column('video_event_type', Enum('WATCH', 'SKIP', validate_strings=True), nullable=False)
 	# seconds from beginning of video (time 0s)
 	video_start_time = Column('video_start_time', Integer, nullable=False)
 	video_end_time = Column('video_end_time', Integer, nullable=True)

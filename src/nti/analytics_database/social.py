@@ -66,7 +66,7 @@ class ChatsInitiated(Base, BaseTableMixin):
 	chat_ds_id = Column('chat_ds_id', INTID_COLUMN_TYPE, index=True, nullable=True, autoincrement=False)
 	chat_id = Column('chat_id', Integer, Sequence('chat_seq'), index=True, nullable=False, primary_key=True)
 
-# Note, we're not tracking when users leave chat rooms.
+# Note: we're not tracking when users leave chat rooms.
 class ChatsJoined(Base, BaseTableMixin):
 
 	__tablename__ = 'ChatsJoined'
@@ -101,7 +101,6 @@ class DynamicFriendsListsMemberRemoved(Base, BaseTableMixin, DynamicFriendsListM
 
 	__tablename__ = 'DynamicFriendsListsMemberRemoved'
 
-	# Make sure we allow multiple removals
 	__table_args__ = (
 		PrimaryKeyConstraint('dfl_id', 'target_id', 'timestamp'),
 	)
@@ -125,7 +124,6 @@ class FriendsListsMemberRemoved(Base, BaseTableMixin, FriendsListMixin, FriendMi
 
 	__tablename__ = 'FriendsListsMemberRemoved'
 
-	# Make sure we allow multiple removals
 	__table_args__ = (
 		PrimaryKeyConstraint('friends_list_id', 'target_id', 'timestamp'),
 	)
@@ -144,7 +142,6 @@ class ContactsRemoved(Base, BaseTableMixin, FriendMixin):
 
 	__tablename__ = 'ContactsRemoved'
 
-	# Make sure we allow multiple contact drops
 	__table_args__ = (
 		PrimaryKeyConstraint('user_id', 'target_id', 'timestamp'),
 	)
