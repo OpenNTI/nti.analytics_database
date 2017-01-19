@@ -32,7 +32,7 @@ class SearchQueries(Base, BaseTableMixin, RootContextMixin):
 
 	hit_count = Column('hit_count', Integer, nullable=True, index=True)
 
-	search_types = Column('search_types', String( 256 ), nullable=True)
+	search_types = Column('search_types', String( 1024 ), nullable=True)
 
 	term = Column('term', String( 256 ), nullable=True, index=True)
 
