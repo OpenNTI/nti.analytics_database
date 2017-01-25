@@ -102,7 +102,7 @@ class DeletedMixin(object):
 
 class ReferrerMixin(object):
 
-	referrer = Column('referrer', String(256), nullable=True, index=False)
+	referrer = Column('referrer', String(1024), nullable=True, index=False)
 
 class CourseMixin(object):
 
