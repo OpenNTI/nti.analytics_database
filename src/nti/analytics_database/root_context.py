@@ -17,8 +17,9 @@ from sqlalchemy import Interval
 
 from sqlalchemy.schema import Sequence
 
-from nti.analytics_database import Base
 from nti.analytics_database import NTIID_COLUMN_TYPE
+
+from nti.analytics_database import Base
 
 
 class RootContext(object):
@@ -58,6 +59,7 @@ class Courses(Base, RootContext):
 
 
 class Books(Base, RootContext):
+
     __tablename__ = 'Books'
 
 
