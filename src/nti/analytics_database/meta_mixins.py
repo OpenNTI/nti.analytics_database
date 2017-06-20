@@ -61,12 +61,12 @@ class BaseTableMixin(UserMixin):
     # For migrating data, we may not have sessions (or timestamps); thus this
     # is optional.
     @declared_attr
-    def session_id(cls):
+    def session_id(self):
         return Column('session_id', SESSION_COLUMN_TYPE,
                       ForeignKey("Sessions.session_id"), nullable=True)
 
     @declared_attr
-    def user_id(cls):
+    def user_id(self):
         return Column('user_id', Integer, ForeignKey("Users.user_id"),
                       index=True, nullable=True)
 
@@ -80,12 +80,12 @@ class BaseViewMixin(UserMixin):
     # For resource views, we need timestamp to be non-null for primary key purposes.
     # It will have to be fine-grain to avoid collisions.
     @declared_attr
-    def session_id(cls):
+    def session_id(self):
         return Column('session_id', SESSION_COLUMN_TYPE,
                       ForeignKey("Sessions.session_id"), nullable=True)
 
     @declared_attr
-    def user_id(cls):
+    def user_id(self):
         return Column('user_id', Integer, ForeignKey("Users.user_id"), index=True)
 
     timestamp = Column('timestamp', DateTime, index=True)
@@ -117,8 +117,8 @@ class CourseMixin(object):
                        autoincrement=False)
 
     @declared_attr
-    def __table_args__(cls):
-        return (Index('ix_%s_user_course' % cls.__tablename__, 'user_id', 'course_id'),)
+    def __table_args__(self):
+        return (Index('ix_%s_user_course' % self.__tablename__, 'user_id', 'course_id'),)
 
 
 class RootContextMixin(object):
@@ -153,7 +153,7 @@ class ResourceMixin(RootContextMixin):
         return relationship('Resources', lazy="select")
 
     @declared_attr
-    def resource_id(cls):
+    def resource_id(self):
         return Column('resource_id', Integer, ForeignKey("Resources.resource_id"),
                       nullable=False, index=True)
 
@@ -198,7 +198,7 @@ class CreatorMixin(object):
     _creator = None
 
     @declared_attr
-    def creator_id(cls):
+    def creator_id(self):
         return Column('creator_id', Integer, ForeignKey("Users.user_id"), index=True)
 
     @declared_attr
@@ -234,7 +234,7 @@ class ReplyToMixin(object):
     # parent_id should point to a parent comment; top-level comments will have
     # null parent_ids
     @declared_attr
-    def parent_id(cls):
+    def parent_id(self):
         return Column('parent_id', INTID_COLUMN_TYPE)
 
     @declared_attr
@@ -243,7 +243,7 @@ class ReplyToMixin(object):
                             foreign_keys=[self.parent_user_id])
 
     @declared_attr
-    def parent_user_id(cls):
+    def parent_user_id(self):
         return Column('parent_user_id', Integer, 
                       ForeignKey("Users.user_id"), index=True, nullable=True)
 
@@ -269,12 +269,12 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
 
     # comment_id should be the DS intid
     @declared_attr
-    def comment_id(cls):
+    def comment_id(self):
         return Column('comment_id', INTID_COLUMN_TYPE, index=True, 
                       nullable=False, autoincrement=False)
 
     @declared_attr
-    def comment_length(cls):
+    def comment_length(self):
         return Column('comment_length', Integer, nullable=True, autoincrement=False)
 
     @property
@@ -289,12 +289,12 @@ class FileMimeTypeMixin(object):
     MimeType = alias('mime_type')
 
     @declared_attr
-    def count(cls):
+    def count(self):
         return Column('count', Integer, index=False, nullable=False,
                       autoincrement=False)
 
     @declared_attr
-    def file_mime_type_id(cls):
+    def file_mime_type_id(self):
         return Column('file_mime_type_id', Integer,
                       ForeignKey("FileMimeTypes.file_mime_type_id"),
                       nullable=False,
