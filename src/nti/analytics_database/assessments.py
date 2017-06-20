@@ -27,9 +27,10 @@ from sqlalchemy.schema import Sequence
 
 from zope import component
 
-from nti.analytics_database import Base
 from nti.analytics_database import NTIID_COLUMN_TYPE
 from nti.analytics_database import INTID_COLUMN_TYPE
+
+from nti.analytics_database import Base
 
 from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
