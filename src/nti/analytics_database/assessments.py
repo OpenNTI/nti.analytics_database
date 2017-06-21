@@ -283,12 +283,12 @@ class FeedbackUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
                          ForeignKey("AssignmentFeedback.feedback_id"),
                          nullable=False, index=True)
 
-    feedback_file_upload_mime_type_id = Column(    'feedback_file_upload_mime_type_id',
-                                                Integer,
-                                                Sequence('feedback_file_upload_seq'),
-                                                index=True,
-                                                nullable=False,
-                                                primary_key=True)
+    feedback_file_upload_mime_type_id = Column('feedback_file_upload_mime_type_id',
+                                               Integer,
+                                               Sequence('feedback_file_upload_seq'),
+                                               index=True,
+                                               nullable=False,
+                                               primary_key=True)
 
 
 class SelfAssessmentsTaken(Base, AssignmentMixin):
@@ -343,6 +343,7 @@ class AssignmentViewMixin(AssignmentIdMixin, ResourceMixin, BaseViewMixin, TimeL
 class SelfAssessmentViews(Base, AssignmentViewMixin):
 
     __tablename__ = 'SelfAssessmentViews'
+
     self_assessment_view_id = Column('self_assessment_view_id',
                                      Integer,
                                      Sequence('self_assessment_view_id_seq'),

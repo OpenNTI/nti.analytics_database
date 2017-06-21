@@ -53,6 +53,7 @@ class VideoEvents(Base, ResourceViewMixin, TimeLengthMixin):
     __tablename__ = 'VideoEvents'
 
     VideoEndTime = alias('video_end_time')
+
     VideoStartTime = alias('video_start_time')
 
     WithTranscript = alias('with_transcript')
