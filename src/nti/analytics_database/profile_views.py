@@ -26,7 +26,7 @@ from nti.analytics_database.meta_mixins import TimeLengthMixin
 class EntityProfileMixin(BaseViewMixin, TimeLengthMixin):
 
     @declared_attr
-    def target_id(cls):
+    def target_id(self):
         return Column('target_id', Integer, ForeignKey("Users.user_id"),
                       index=True, nullable=False)
 
