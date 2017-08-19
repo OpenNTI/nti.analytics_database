@@ -48,6 +48,8 @@ setup(
         'setuptools',
 		'nti.property',
 		'sqlalchemy',
+        'zope.component',
+        'zope.interface',
     ],
     extras_require={
         'test': TESTS_REQUIRE,
