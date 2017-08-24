@@ -7,8 +7,7 @@ entry_points = {
 }
 
 TESTS_REQUIRE = [
-    'pyhamcrest',
-    'zope.testing',
+    'nti.testing',
     'zope.testrunner',
 ]
 
@@ -21,8 +20,8 @@ def _read(fname):
 setup(
     name='nti.analytics_database',
     version=_read('version.txt').strip(),
-	author='Josh Zuech',
-	author_email='josh.zuech@nextthought.com',
+    author='Josh Zuech',
+    author_email='josh.zuech@nextthought.com',
     description="NTI analytics_database",
     long_description=(_read('README.rst') + '\n\n' + _read("CHANGES.rst")),
     license='Apache',
@@ -38,6 +37,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
+    url="https://github.com/NextThought/nti.analytics_database",
     zip_safe=True,
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -46,8 +46,8 @@ setup(
     tests_require=TESTS_REQUIRE,
     install_requires=[
         'setuptools',
-		'nti.property',
-		'sqlalchemy',
+        'nti.property',
+        'sqlalchemy',
         'zope.component',
         'zope.interface',
     ],
