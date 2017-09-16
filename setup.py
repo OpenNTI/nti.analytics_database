@@ -23,7 +23,7 @@ setup(
     version=_read('version.txt').strip(),
     author='Josh Zuech',
     author_email='josh.zuech@nextthought.com',
-    description="NTI analytics_database",
+    description="NTI Analytics Database",
     long_description=(_read('README.rst') + '\n\n' + _read("CHANGES.rst")),
     license='Apache',
     keywords='analytics database',
