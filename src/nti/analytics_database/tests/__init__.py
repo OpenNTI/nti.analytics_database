@@ -36,21 +36,8 @@ _import_db_modules()
 del _import_db_modules
 
 
-def create_engine(dburi='sqlite://', pool_size=30, max_overflow=10, pool_recycle=300):
-    try:
-        if dburi == 'sqlite://':
-            result = sqlalchemy_create_engine(dburi,
-                                              connect_args={'check_same_thread': False},
-                                              poolclass=StaticPool)
-
-        else:
-            result = sqlalchemy_create_engine(dburi,
-                                              pool_size=pool_size,
-                                              max_overflow=max_overflow,
-                                              pool_recycle=pool_recycle)
-    except TypeError:
-        # SQLite does not use pooling anymore.
-        result = sqlalchemy_create_engine(dburi)
+def create_engine(dburi='sqlite://'):
+    result = sqlalchemy_create_engine(dburi)
     return result
 
 
