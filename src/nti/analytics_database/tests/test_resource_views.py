@@ -11,6 +11,12 @@ from __future__ import absolute_import
 from hamcrest import is_
 from hamcrest import assert_that
 
+import fudge
+
+from zope import component
+
+from nti.analytics_database.interfaces import IAnalyticsNTIIDFinder
+
 from nti.analytics_database.mime_types import FileMimeTypes
 
 from nti.analytics_database.resource_views import UserFileUploadViewEvents
@@ -31,3 +37,11 @@ class TestResourceViews(AnalyticsDatabaseTest):
         self.session.commit()
 
         assert_that(ufu.mime_type, is_('text/x-python'))
+
+        fileobj = fudge.Fake()
+        finder = fudge.Fake().provides("find").returns(fileobj)
+        component.getGlobalSiteManager().registerUtility(finder,
+                                                         IAnalyticsNTIIDFinder)
+        assert_that(ufu.FileObject, is_(fileobj))
+        component.getGlobalSiteManager().unregisterUtility(finder,
+                                                           IAnalyticsNTIIDFinder)

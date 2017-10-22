@@ -19,9 +19,13 @@ from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 
+from zope import component
+
 from nti.analytics_database import NTIID_COLUMN_TYPE
 
 from nti.analytics_database import Base
+
+from nti.analytics_database.interfaces import IAnalyticsNTIIDFinder
 
 from nti.analytics_database.meta_mixins import CreatorMixin
 from nti.analytics_database.meta_mixins import BaseViewMixin
@@ -123,9 +127,5 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
 
     @property
     def FileObject(self):
-        # TODO: Register an utility
-        try:
-            from nti.ntiids.ntiids import find_object_with_ntiid
-            return find_object_with_ntiid(self.file_ds_id)
-        except ImportError:
-            return None
+        finder = component.getUtility(IAnalyticsNTIIDFinder)
+        return finder.find(self.file_ds_id)
