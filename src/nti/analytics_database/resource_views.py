@@ -119,7 +119,7 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
 
     @property
     def mime_type(self):
-        return self._file_mime_type_id.mime_type
+        return self._file_mime_type.mime_type
 
     @property
     def FileObject(self):
