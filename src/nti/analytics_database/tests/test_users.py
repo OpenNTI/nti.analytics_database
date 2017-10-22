@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 from hamcrest import is_
 from hamcrest import assert_that
+from hamcrest import has_property
 
 import fudge
 
@@ -29,9 +30,10 @@ class TestUsers(AnalyticsDatabaseTest):
         intid = fudge.Fake().provides("get_object").returns(fake)
         component.getGlobalSiteManager().registerUtility(intid,
                                                          IAnalyticsIntidIdentifier)
-        users = Users()
-        users.user_ds_id = 1
-        assert_that(users.user, is_(fake))
+        user = Users()
+        user.user_ds_id = 1
+        assert_that(user,
+                    has_property('user', is_(fake)))
 
         component.getGlobalSiteManager().unregisterUtility(intid,
                                                            IAnalyticsIntidIdentifier)

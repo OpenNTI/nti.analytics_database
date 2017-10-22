@@ -21,7 +21,7 @@ from nti.analytics_database.tests import AnalyticsDatabaseTest
 
 class TestSessions(AnalyticsDatabaseTest):
 
-    def test_intid_identifier(self):
+    def test_duration(self):
         session = Sessions()
         now = datetime.now()
         session.end_time = session.start_time = now

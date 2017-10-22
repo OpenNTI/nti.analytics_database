@@ -19,7 +19,7 @@ from nti.analytics_database.tests import AnalyticsDatabaseTest
 
 class TestSearch(AnalyticsDatabaseTest):
 
-    def test_intid_identifier(self):
+    def test_search_types(self):
         search = SearchQueries()
         search.search_types = 'a/b/c'
         assert_that(search,
