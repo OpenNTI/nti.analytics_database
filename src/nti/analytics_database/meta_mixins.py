@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from sqlalchemy import Column
 from sqlalchemy import String
@@ -32,6 +31,8 @@ from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 from nti.analytics_database.interfaces import IAnalyticsRootContextResolver
 
 from nti.property.property import alias
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class UserMixin(object):

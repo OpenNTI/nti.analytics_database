@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -21,6 +20,8 @@ from nti.analytics_database import Base
 
 from nti.analytics_database.meta_mixins import BaseViewMixin
 from nti.analytics_database.meta_mixins import TimeLengthMixin
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class EntityProfileMixin(BaseViewMixin, TimeLengthMixin):

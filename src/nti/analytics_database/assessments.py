@@ -4,14 +4,13 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from collections import Mapping
 
-import json
+import simplejson as json
 
 from sqlalchemy import Text
 from sqlalchemy import Float
@@ -45,6 +44,8 @@ from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import FileMimeTypeMixin
 
 from nti.property.property import alias
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class AssignmentIdMixin(object):

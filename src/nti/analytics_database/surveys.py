@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -20,6 +19,8 @@ from nti.analytics_database import INTID_COLUMN_TYPE
 
 from nti.analytics_database.meta_mixins import CourseMixin
 from nti.analytics_database.meta_mixins import BaseTableMixin
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class InquiryMixin(BaseTableMixin, CourseMixin):
