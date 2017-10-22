@@ -61,4 +61,7 @@ class IAnalyticsRootContextResolver(interface.Interface):
     """
 
     def __call__(rc_id):
-        pass
+        """
+        return the root context for the specified id
+        """
+
