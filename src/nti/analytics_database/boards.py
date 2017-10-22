@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -37,6 +36,8 @@ from nti.analytics_database.meta_mixins import BaseTableMixin
 from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import RootContextMixin
 from nti.analytics_database.meta_mixins import FileMimeTypeMixin
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class ForumMixin(RootContextMixin):

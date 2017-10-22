@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from sqlalchemy import Enum
 from sqlalchemy import Column
@@ -33,6 +32,8 @@ from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import ResourceViewMixin
 
 from nti.property.property import alias
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):

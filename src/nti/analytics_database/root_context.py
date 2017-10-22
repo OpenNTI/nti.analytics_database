@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from sqlalchemy import Column
 from sqlalchemy import String
@@ -20,6 +19,8 @@ from sqlalchemy.schema import Sequence
 from nti.analytics_database import NTIID_COLUMN_TYPE
 
 from nti.analytics_database import Base
+
+logger = __import__('logging').getLogger(__name__)
 
 
 class RootContext(object):
