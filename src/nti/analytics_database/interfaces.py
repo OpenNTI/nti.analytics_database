@@ -23,13 +23,13 @@ class IAnalyticsDSIdentifier(interface.Interface):
     and dataserver objects from identities.
     """
 
-    def get_id(self, obj):
+    def get_id(obj):
         """
         For the given dataserver object, return a unique
         dataserver identifier.
         """
 
-    def get_object(self, obj_id):
+    def get_object(obj_id):
         """
         For the given dataserver identifier, return a
         dataserver object.
@@ -65,3 +65,12 @@ class IAnalyticsRootContextResolver(interface.Interface):
         return the root context for the specified id
         """
 
+class IAnalyticsNTIIDFinder(interface.Interface):
+    """
+    A utility that finds a dataserver object based on an NTIID
+    """
+
+    def find(ntiid):
+        """
+        For the given dataserver object for the specified ntiid
+        """
