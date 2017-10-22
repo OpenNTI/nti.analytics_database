@@ -48,6 +48,7 @@ setup(
     install_requires=[
         'setuptools',
         'nti.property',
+        'simplejson',
         'sqlalchemy',
         'zope.component',
         'zope.interface',
