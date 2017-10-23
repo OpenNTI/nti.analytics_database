@@ -115,12 +115,12 @@ class NotesUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
     note_id = Column('note_id', Integer, ForeignKey("NotesCreated.note_id"),
                      nullable=False, index=True)
 
-    note_file_upload_mime_type_id = Column(	'note_file_upload_mime_type_id',
-                                            Integer,
-                                            Sequence('note_file_upload_seq'),
-                                            index=True,
-                                            nullable=False,
-                                            primary_key=True)
+    note_file_upload_mime_type_id = Column('note_file_upload_mime_type_id',
+                                           Integer,
+                                           Sequence('note_file_upload_seq'),
+                                           index=True,
+                                           nullable=False,
+                                           primary_key=True)
 
 
 class NotesViewed(Base, BaseViewMixin, NoteMixin):
