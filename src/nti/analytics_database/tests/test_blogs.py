@@ -58,6 +58,7 @@ class TestBlogs(AnalyticsDatabaseTest):
 
         assert_that(created.Blog, is_(fake))
         assert_that(comment.Blog, is_(fake))
+        assert_that(comment.Comment, is_(fake))
 
         assert_that(comment.FileMimeTypes,
                     is_({'text/x-python': 1}))

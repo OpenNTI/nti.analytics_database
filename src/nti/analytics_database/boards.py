@@ -130,8 +130,8 @@ class ForumCommentsCreated(Base, CommentsMixin, TopicMixin, RatingsMixin):
         PrimaryKeyConstraint('comment_id'),
     )
 
-    _file_mime_types = relationship(
-        'ForumCommentsUserFileUploadMimeTypes', lazy="select")
+    _file_mime_types = relationship('ForumCommentsUserFileUploadMimeTypes', 
+                                    lazy="select")
 
     @property
     def FileMimeTypes(self):
