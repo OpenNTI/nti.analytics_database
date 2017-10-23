@@ -26,7 +26,7 @@ from nti.analytics_database.tests import AnalyticsDatabaseTest
 
 class TestResourceViews(AnalyticsDatabaseTest):
 
-    def test_intid_identifier(self):
+    def test_coverage(self):
         fmt = FileMimeTypes(file_mime_type_id=1, mime_type=u'text/x-python')
         self.session.add(fmt)
 
