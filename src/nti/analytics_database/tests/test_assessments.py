@@ -30,6 +30,8 @@ from nti.analytics_database.assessments import SelfAssessmentsTaken
 from nti.analytics_database.assessments import AssignmentDetailGrades
 from nti.analytics_database.assessments import FeedbackUserFileUploadMimeTypes
 
+from nti.analytics_database.assessments import _load_response
+
 from nti.analytics_database.tests import AnalyticsDatabaseTest
 
 from nti.analytics_database.users import Users
@@ -37,6 +39,10 @@ from nti.analytics_database.users import Users
 
 class TestAssessments(AnalyticsDatabaseTest):
 
+    def test_load_response(self):
+        assert_that(_load_response('{"a": 1}'),
+                    is_({'a':1}))
+        
     def test_coverage(self):
         fmt = FileMimeTypes(file_mime_type_id=1, mime_type=u'text/x-python')
         self.session.add(fmt)

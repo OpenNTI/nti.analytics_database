@@ -50,7 +50,7 @@ class TestBlogs(AnalyticsDatabaseTest):
 
         class MockIntId(object):
             def get_object(self, iden):
-                if iden in (1):
+                if iden in (1,):
                     return fake
         intid = MockIntId()
         component.getGlobalSiteManager().registerUtility(intid,
