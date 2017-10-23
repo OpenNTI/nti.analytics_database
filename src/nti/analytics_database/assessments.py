@@ -122,7 +122,7 @@ def _load_response(value):
         # We currently do not handle mixed types of keys.
         try:
             response = {int(x): y for x, y in response.items()}
-        except ValueError:
+        except ValueError:  # pragma: no cover
             pass
     return response
 
