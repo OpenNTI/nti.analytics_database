@@ -41,8 +41,8 @@ class TestAssessments(AnalyticsDatabaseTest):
 
     def test_load_response(self):
         assert_that(_load_response('{"a": 1}'),
-                    is_({'a':1}))
-        
+                    is_({'a': 1}))
+
     def test_coverage(self):
         fmt = FileMimeTypes(file_mime_type_id=1, mime_type=u'text/x-python')
         self.session.add(fmt)
@@ -103,7 +103,9 @@ class TestAssessments(AnalyticsDatabaseTest):
         self_views = SelfAssessmentViews(self_assessment_view_id=1,
                                          resource_id=1,
                                          course_id=1,
-                                         assignment_id=1)
+                                         assignment_id=1,
+                                         user_id=1,
+                                         context_path=u'a/b')
         self.session.add(self_views)
         self.session.commit()
 
@@ -136,6 +138,12 @@ class TestAssessments(AnalyticsDatabaseTest):
         assert_that(self_taken.Submission, is_(fake))
 
         assert_that(self_views.ResourceId, is_('3'))
+        assert_that(self_views.ContextPath, is_(['a', 'b']))
+
+        assert_that(self_views.user, is_(fake))
+        fake2 = fudge.Fake()
+        self_views.user = fake2
+        assert_that(self_views.user, is_(fake2))
 
         component.getGlobalSiteManager().unregisterUtility(intid,
                                                            IAnalyticsIntidIdentifier)

@@ -9,6 +9,7 @@ from __future__ import absolute_import
 # pylint: disable=W0212,R0904
 
 from hamcrest import is_
+from hamcrest import none
 from hamcrest import assert_that
 
 import fudge
@@ -65,6 +66,12 @@ class TestBoards(AnalyticsDatabaseTest):
                                                          IAnalyticsIntidIdentifier)
 
         assert_that(forum_created.Forum, is_(fake))
+        assert_that(forum_created.RootContext, is_(none()))  # no resolver
+
+        fake_root = fudge.Fake()
+        forum_created.RootContext = fake_root
+        assert_that(forum_created.RootContext, is_(fake_root))
+
         assert_that(topic_created.Topic, is_(fake))
 
         assert_that(comment.Topic, is_(fake))

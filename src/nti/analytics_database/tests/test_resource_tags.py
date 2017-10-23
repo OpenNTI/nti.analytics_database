@@ -47,7 +47,8 @@ class TestResourceTags(AnalyticsDatabaseTest):
         self.session.add(user)
 
         created = NotesCreated(note_ds_id=3, note_id=1, sharing=u'GLOBAL',
-                               resource_id=1)
+                               resource_id=1,
+                               parent_user_id=1)
         self.session.add(created)
 
         viewed = NotesViewed(note_id=1, user_id=1, resource_id=1,
@@ -74,18 +75,31 @@ class TestResourceTags(AnalyticsDatabaseTest):
 
         class MockIntId(object):
             def get_object(self, iden):
-                if iden in (3, 4, 5):
+                if iden in (2, 3, 4, 5):
                     return fake
         intid = MockIntId()
         component.getGlobalSiteManager().registerUtility(intid,
                                                          IAnalyticsIntidIdentifier)
 
         assert_that(viewed.Note, is_(fake))
-        viewed.Note = fake
-        assert_that(viewed.Note, is_(fake))
+
+        fake_note = fudge.Fake()
+        viewed.Note = fake_note
+        assert_that(viewed.Note, is_(fake_note))
 
         assert_that(created.FileMimeTypes,
                     is_({'text/x-python': 1}))
+
+        assert_that(created.IsReply,
+                    is_(False))
+
+        assert_that(created.RepliedToUser,
+                    is_(fake))
+
+        fake_user = fudge.Fake()
+        created.RepliedToUser = fake_user
+        assert_that(created.RepliedToUser,
+                    is_(fake_user))
 
         assert_that(bookmark.Bookmark, is_(fake))
         assert_that(highlight.Highlight, is_(fake))

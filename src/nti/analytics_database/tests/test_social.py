@@ -28,7 +28,7 @@ from nti.analytics_database.users import Users
 
 class TestSocial(AnalyticsDatabaseTest):
 
-    def test_intsid_identifier(self):
+    def test_target_entity(self):
         user = Users(user_ds_id=1, user_id=1, username=u'ichigo')
         self.session.add(user)
 
@@ -52,7 +52,7 @@ class TestSocial(AnalyticsDatabaseTest):
         component.getGlobalSiteManager().unregisterUtility(intid,
                                                            IAnalyticsIntidIdentifier)
 
-    def test_intid_identifier(self):
+    def test_dfl_group(self):
         fake = fudge.Fake()
 
         class MockIntId(object):
