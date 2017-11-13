@@ -40,10 +40,10 @@ class Users(Base):
     allow_research = Column('allow_research', Boolean,
                             nullable=True, default=None)
 
-    username = Column('username', String(64), nullable=True,
+    username = Column('username', String(128), nullable=True,
                       unique=False, index=True)
 
-    username2 = Column('username2', String(64), nullable=True, unique=False)
+    username2 = Column('username2', String(128), nullable=True, unique=False)
 
     create_date = Column('create_date', DateTime, nullable=True)
 

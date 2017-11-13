@@ -170,6 +170,9 @@ class ResourceMixin(RootContextMixin):
     def MaxDuration(self, max_duration):
         self._MaxDuration = max_duration
 
+    @property
+    def Title(self):
+        return self._resource.resource_display_name
 
 class ResourceViewMixin(ResourceMixin, BaseViewMixin):
     pass
@@ -240,12 +243,12 @@ class ReplyToMixin(object):
 
     @declared_attr
     def _parent_user_record(self):
-        return relationship('Users', lazy="select", 
+        return relationship('Users', lazy="select",
                             foreign_keys=[self.parent_user_id])
 
     @declared_attr
     def parent_user_id(self):
-        return Column('parent_user_id', Integer, 
+        return Column('parent_user_id', Integer,
                       ForeignKey("Users.user_id"), index=True, nullable=True)
 
     @property
@@ -271,7 +274,7 @@ class CommentsMixin(BaseTableMixin, DeletedMixin, ReplyToMixin):
     # comment_id should be the DS intid
     @declared_attr
     def comment_id(self):
-        return Column('comment_id', INTID_COLUMN_TYPE, index=True, 
+        return Column('comment_id', INTID_COLUMN_TYPE, index=True,
                       nullable=False, autoincrement=False)
 
     @declared_attr
