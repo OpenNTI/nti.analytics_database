@@ -53,6 +53,7 @@ setup(
         'sqlalchemy',
         'zope.component',
         'zope.interface',
+        'zope.sqlalchemy',
     ],
     extras_require={
         'test': TESTS_REQUIRE,
