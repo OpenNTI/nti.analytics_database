@@ -68,7 +68,6 @@ class TestZcml(nti.testing.base.ConfiguringTestBase):
 class TestConfig(nti.testing.base.ConfiguringTestBase):
 
     def test_config_file(self):
-
         tmp_dir = tempfile.mkdtemp(dir="/tmp")
         try:
             config = configparser.RawConfigParser()
