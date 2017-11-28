@@ -9,6 +9,7 @@ entry_points = {
 TESTS_REQUIRE = [
     'fudge',
     'nti.testing',
+    'pymysql',
     'zope.dottedname',
     'zope.testrunner',
 ]
@@ -53,6 +54,7 @@ setup(
         'sqlalchemy',
         'zope.component',
         'zope.interface',
+        'zope.sqlalchemy',
     ],
     extras_require={
         'test': TESTS_REQUIRE,

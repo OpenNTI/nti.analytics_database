@@ -174,6 +174,7 @@ class ResourceMixin(RootContextMixin):
     def Title(self):
         return self._resource.resource_display_name
 
+
 class ResourceViewMixin(ResourceMixin, BaseViewMixin):
     pass
 

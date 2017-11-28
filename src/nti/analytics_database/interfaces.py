@@ -17,6 +17,12 @@ class IAnalyticsDatabase(interface.Interface):
     """
 
 
+class IAnalyticsDB(IAnalyticsDatabase):
+    """
+    BWC Interface for the Analytics DB
+    """
+
+
 class IAnalyticsDSIdentifier(interface.Interface):
     """
     A utility that gets dataserver identities for objects
@@ -64,6 +70,7 @@ class IAnalyticsRootContextResolver(interface.Interface):
         """
         return the root context for the specified id
         """
+
 
 class IAnalyticsNTIIDFinder(interface.Interface):
     """
