@@ -9,6 +9,7 @@ from __future__ import absolute_import
 # pylint: disable=W0212,R0904
 
 from hamcrest import is_
+from hamcrest import none
 from hamcrest import assert_that
 
 import fudge
@@ -139,6 +140,7 @@ class TestAssessments(AnalyticsDatabaseTest):
 
         assert_that(self_views.ResourceId, is_('3'))
         assert_that(self_views.ContextPath, is_(['a', 'b']))
+        assert_that(self_views.Title, is_(none()))
 
         assert_that(self_views.user, is_(fake))
         fake2 = fudge.Fake()

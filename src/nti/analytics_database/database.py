@@ -41,7 +41,7 @@ class AnalyticsDB(object):
 	pool_recycle = 300
 
 	def __init__(self, dburi=None, twophase=False, autocommit=False,
-				 defaultSQLite=False, testmode=False, config=None):
+				 defaultSQLite=False, testmode=False, config=None, metadata=True):
 		self.dburi = dburi
 		self.twophase = twophase
 		self.autocommit = autocommit
@@ -64,9 +64,12 @@ class AnalyticsDB(object):
 			if parser.has_option('analytics', 'autocommit'):
 				self.autocommit = parser.getboolean('analytics', 'autocommit')
 
-		logger.info("Connecting to database at '%s' (twophase=%s) (testmode=%s)",
-					self.dburi, self.twophase, self.testmode)
-		self.metadata = AnalyticsMetadata(self.engine)
+		if metadata:
+			logger.info("Connecting to database at '%s' (twophase=%s) (testmode=%s)",
+						self.dburi, self.twophase, self.testmode)
+			self.metadata = AnalyticsMetadata(self.engine)
+		else:
+			self.metadata = None
 
 	@Lazy
 	def engine(self):
