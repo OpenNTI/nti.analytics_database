@@ -15,6 +15,9 @@ from nti.analytics_database import Base
 
 class AnalyticsMetadata(object):
 
+    __slots__ = ('metadata',)
+
     def __init__(self, engine):
         logger.info("Initializing database")
-        getattr(Base, 'metadata').create_all(engine)
+        self.metadata = getattr(Base, 'metadata')
+        self.metadata.create_all(engine)
