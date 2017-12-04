@@ -8,6 +8,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
+# pylint: disable=inherit-non-class
+
 from zope import interface
 
 
@@ -15,7 +17,10 @@ class IAnalyticsDatabase(interface.Interface):
     """
     An utility interface for the Analytics database
     """
-
+    
+    engine = interface.Attribute("SQLAlchemy engine")
+    session = interface.Attribute("SQLAlchemy session")
+    sessionmaker = interface.Attribute("SQLAlchemy session maker")
 
 class IAnalyticsDB(IAnalyticsDatabase):
     """
