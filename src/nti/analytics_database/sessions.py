@@ -15,6 +15,8 @@ from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.schema import Sequence
 
 from nti.analytics_database import SESSION_COLUMN_TYPE
@@ -52,6 +54,15 @@ class Sessions(Base):
 
     end_time = Column('end_time', DateTime)
 
+    geo_location = relationship('IpGeoLocation',
+                                foreign_keys=[ip_addr],
+                                primaryjoin='IpGeoLocation.ip_addr == Sessions.ip_addr')
+
+    @property
+    def Location(self):
+        if self.geo_location is not None:
+            return self.geo_location.location
+
     @property
     def Duration(self):
         result = None
@@ -85,7 +96,12 @@ class IpGeoLocation(Base):
 
     longitude = Column('longitude', Float())
 
+    # Nullable because this data is eventually consistent (plus it may be null).
     location_id = Column('location_id', Integer, nullable=True, index=True)
+
+    location = relationship('Location',
+                            foreign_keys=[location_id],
+                            primaryjoin='IpGeoLocation.location_id == Location.location_id')
 
 
 class Location(Base):
@@ -95,7 +111,7 @@ class Location(Base):
     # Stores a list of distinct locations of users, by lat/long coordinates.
     # Each location has a unique ID.
     location_id = Column('location_id', Integer,
-                         Sequence('location_id_seq'), 
+                         Sequence('location_id_seq'),
                          primary_key=True)
 
     latitude = Column('latitude', String(64))
@@ -113,7 +129,7 @@ class UserAgents(Base):
 
     __tablename__ = 'UserAgents'
 
-    user_agent_id = Column('user_agent_id', Integer, 
+    user_agent_id = Column('user_agent_id', Integer,
                            Sequence('user_agent_id_seq'),
                            index=True, primary_key=True)
 
