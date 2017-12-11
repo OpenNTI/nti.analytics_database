@@ -64,6 +64,7 @@ class NoteMixin(ResourceMixin):
     def Note(self):
         result = self._note
         if result is None:
+            # pylint: disable=no-member
             result = self._note_record.Note
         return result
 

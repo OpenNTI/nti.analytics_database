@@ -55,6 +55,7 @@ class BlogMixin(object):
 
     @property
     def Blog(self):
+        # pylint: disable=no-member
         return self._blog_record.Blog
 
 

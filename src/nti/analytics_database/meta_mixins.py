@@ -47,6 +47,7 @@ class UserMixin(object):
     def user(self):
         result = self._user
         if result is None:
+            # pylint: disable=no-member
             result = self._user_record.user
         return result
 
@@ -160,10 +161,12 @@ class ResourceMixin(RootContextMixin):
 
     @property
     def ResourceId(self):
+        # pylint: disable=no-member
         return self._resource.resource_ds_id
 
     @property
     def MaxDuration(self):
+        # pylint: disable=no-member
         return self._MaxDuration or self._resource.max_time_length
 
     @MaxDuration.setter
@@ -172,6 +175,7 @@ class ResourceMixin(RootContextMixin):
 
     @property
     def Title(self):
+        # pylint: disable=no-member
         return self._resource.resource_display_name
 
 
@@ -214,6 +218,7 @@ class CreatorMixin(object):
     def ObjectCreator(self):
         result = self._creator
         if self._creator is None:
+            # pylint: disable=no-member
             result = self._creator_record.user
         return result
 
@@ -260,6 +265,7 @@ class ReplyToMixin(object):
     def RepliedToUser(self):
         result = self._replied_to_user
         if result is None and self._parent_user_record:
+            # pylint: disable=no-member
             result = self._parent_user_record.user
         return result
 
@@ -312,4 +318,5 @@ class FileMimeTypeMixin(object):
 
     @property
     def mime_type(self):
+        # pylint: disable=no-member
         return self._mime_type.mime_type
