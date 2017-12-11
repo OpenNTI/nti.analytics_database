@@ -337,6 +337,7 @@ class AssignmentViewMixin(AssignmentIdMixin, ResourceMixin, BaseViewMixin, TimeL
     def ResourceId(self):
         result = self._resource
         if result is not None:
+            # pylint: disable=no-member
             result = self._resource.resource_ds_id
         return result
 

@@ -5,8 +5,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-# disable: accessing protected members, too many methods
-# pylint: disable=W0212,R0904
+# pylint: disable=protected-access,too-many-public-methods,arguments-differ
 
 import os
 import unittest
@@ -48,8 +47,8 @@ def create_sessionmaker(engine, autoflush=False, twophase=False):
     return result
 
 
-def create_session(sessionmaker):
-    return scoped_session(sessionmaker)
+def create_session(session_maker):
+    return scoped_session(session_maker)
 
 
 class AnalyticsDatabaseTest(unittest.TestCase):
@@ -62,4 +61,5 @@ class AnalyticsDatabaseTest(unittest.TestCase):
         self.session = create_session(self.sessionmaker)
 
     def tearDown(self):
+        # pylint: disable=no-member
         self.session.close()

@@ -57,6 +57,7 @@ class ForumMixin(RootContextMixin):
     def Forum(self):
         result = self._forum
         if result is None:
+            # pylint: disable=no-member
             result = self._forum_record.Forum
         return result
 
@@ -82,6 +83,7 @@ class TopicMixin(ForumMixin):
     def Topic(self):
         result = self._topic
         if result is None:
+            # pylint: disable=no-member
             result = self._topic_record.Topic
         return result
 

@@ -22,6 +22,7 @@ class IAnalyticsDatabase(interface.Interface):
     session = interface.Attribute("SQLAlchemy session")
     sessionmaker = interface.Attribute("SQLAlchemy session maker")
 
+
 class IAnalyticsDB(IAnalyticsDatabase):
     """
     BWC Interface for the Analytics DB
@@ -71,7 +72,7 @@ class IAnalyticsRootContextResolver(interface.Interface):
     Marker interface to resolve root context objects
     """
 
-    def __call__(rc_id):
+    def __call__(rc_id):  # pylint: disable=no-self-argument,signature-differs
         """
         return the root context for the specified id
         """

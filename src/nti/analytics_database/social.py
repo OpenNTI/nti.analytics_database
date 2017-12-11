@@ -54,6 +54,7 @@ class FriendMixin(object):
 
     @property
     def _target_entity(self):
+        # pylint: disable=no-member
         return self._target_record.user
 
 
