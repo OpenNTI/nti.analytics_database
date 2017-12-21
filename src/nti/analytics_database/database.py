@@ -107,9 +107,10 @@ class AnalyticsDB(object):
 
     @Lazy
     def session(self):
-        # This property proxies into a thread-local session.
+        # This session_scoped object acts as a proxy to the underlying,
+        # thread-local session objects.
         return scoped_session(self.sessionmaker)
-       
+
     def savepoint(self):
         if not self.testmode and not self.defaultSQLite:
             return transaction.savepoint()
