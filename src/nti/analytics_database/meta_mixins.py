@@ -130,8 +130,8 @@ class RootContextMixin(object):
     entity_root_context_id = Column('entity_root_context_id', Integer,
                                     nullable=True, index=True, autoincrement=False)
 
-    course_id = Column('course_id', Integer, nullable=True, index=True,
-                       autoincrement=False)
+    root_context_id = Column('root_context_id', Integer, nullable=True, index=True,
+                             autoincrement=False)
 
     @property
     def RootContext(self):
@@ -144,6 +144,15 @@ class RootContextMixin(object):
     @RootContext.setter
     def RootContext(self, root_context):
         self._RootContext = root_context
+
+    # BWC
+    @property
+    def course_id(self):
+        return self.root_context_id
+
+    @course_id.setter
+    def course_id(self, value):
+        self.root_context_id = value
 
 
 class ResourceMixin(RootContextMixin):

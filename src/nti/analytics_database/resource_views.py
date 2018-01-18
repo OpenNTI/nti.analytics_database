@@ -40,9 +40,9 @@ from nti.property.property import alias
 logger = __import__('logging').getLogger(__name__)
 
 
-class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
+class ResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
 
-    __tablename__ = 'CourseResourceViews'
+    __tablename__ = 'ResourceViews'
 
     # Need to have a seq primary key that we will not use to work around primary key limits
     # in mysql, or we could put our resource_ids into another table to conserve space (we did).
@@ -51,6 +51,8 @@ class CourseResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
     resource_view_id = Column('resource_view_id', Integer,
                               Sequence('resource_view_id_seq'),
                               primary_key=True)
+# BWC
+CourseResourceViews = ResourceViews
 
 
 class VideoEvents(Base, ResourceViewMixin, TimeLengthMixin):
