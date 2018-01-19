@@ -8,6 +8,7 @@ from __future__ import absolute_import
 # pylint: disable=protected-access,too-many-public-methods,no-member
 
 from hamcrest import is_
+from hamcrest import none
 from hamcrest import assert_that
 
 import fudge
@@ -79,6 +80,8 @@ class TestResourceViews(AnalyticsDatabaseTest):
         assert_that(event.MaxDuration, is_(10))
         event.MaxDuration = 15
         assert_that(event.MaxDuration, is_(15))
+        
+        assert_that(event.course_id, is_(none()))
 
         fileobj = fudge.Fake()
         finder = fudge.Fake().provides("find").returns(fileobj)
