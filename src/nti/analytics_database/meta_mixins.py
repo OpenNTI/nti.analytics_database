@@ -130,6 +130,7 @@ class RootContextMixin(object):
     entity_root_context_id = Column('entity_root_context_id', Integer,
                                     nullable=True, index=True, autoincrement=False)
 
+    # TODO: Rename this column for relevant tables.
     root_context_id = Column('course_id', Integer, nullable=True, index=True,
                              autoincrement=False)
 
