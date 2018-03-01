@@ -1,0 +1,25 @@
+<!-- -*- mode: nxml -*- -->
+<configure	xmlns="http://namespaces.zope.org/zope"
+			xmlns:i18n="http://namespaces.zope.org/i18n"
+			xmlns:zcml="http://namespaces.zope.org/zcml">
+
+	<include package="zope.component" file="meta.zcml" />
+	<include package="zope.component" />
+
+	<utility component=".assessments" name="assessments" />
+	<utility component=".blogs" name="blogs" />
+	<utility component=".boards" name="boards" />
+	<utility component=".enrollments" name="enrollments" />
+	<utility component=".mime_types" name="mime_types" />
+	<utility component=".profile_views" name="profile_views" />
+	<utility component=".resource_tags" name="resource_tags" />
+	<utility component=".resource_views" name="resource_views" />
+	<utility component=".resources" name="resources" />
+	<utility component=".root_context" name="root_context" />
+	<utility component=".search" name="search" />
+	<utility component=".sessions" name="sessions" />
+	<utility component=".social" name="social" />
+	<utility component=".surveys" name="surveys" />
+	<utility component=".users" name="users" />
+
+</configure>

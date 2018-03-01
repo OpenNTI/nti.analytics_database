@@ -16,6 +16,8 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from sqlalchemy.schema import PrimaryKeyConstraint
 
+from zope import interface
+
 from nti.analytics_database import Base
 
 from nti.analytics_database.meta_mixins import BaseViewMixin
@@ -57,3 +59,7 @@ class EntityProfileMembershipViews(Base, EntityProfileMixin):
     __table_args__ = (
         PrimaryKeyConstraint('user_id', 'target_id', 'timestamp'),
     )
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

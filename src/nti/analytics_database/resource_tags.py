@@ -21,6 +21,7 @@ from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 
 from zope import component
+from zope import interface
 
 from nti.analytics_database import INTID_COLUMN_TYPE
 
@@ -191,3 +192,7 @@ class BookmarksCreated(Base, BaseTableMixin, ResourceMixin, DeletedMixin):
     def Bookmark(self):
         id_utility = component.getUtility(IAnalyticsIntidIdentifier)
         return id_utility.get_object(self.bookmark_ds_id)
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

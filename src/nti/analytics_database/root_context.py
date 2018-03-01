@@ -16,6 +16,8 @@ from sqlalchemy import Interval
 
 from sqlalchemy.schema import Sequence
 
+from zope import interface
+
 from nti.analytics_database import NTIID_COLUMN_TYPE
 
 from nti.analytics_database import Base
@@ -76,3 +78,7 @@ class RootContextId(Base):
                         Sequence('context_id_seq', start=1000),
                         nullable=False, primary_key=True)
 _RootContextId = RootContextId  # alias BWC
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

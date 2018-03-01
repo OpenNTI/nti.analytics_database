@@ -20,6 +20,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Sequence
 
 from zope import component
+from zope import interface
 
 from nti.analytics_database import NTIID_COLUMN_TYPE
 
@@ -131,3 +132,7 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
     def FileObject(self):
         finder = component.getUtility(IAnalyticsNTIIDFinder)
         return finder.find(self.file_ds_id)
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

@@ -17,6 +17,7 @@ from sqlalchemy import DateTime
 from sqlalchemy.schema import Sequence
 
 from zope import component
+from zope import interface
 
 from nti.analytics_database import INTID_COLUMN_TYPE
 
@@ -51,3 +52,7 @@ class Users(Base):
     def user(self):
         id_utility = component.getUtility(IAnalyticsIntidIdentifier)
         return id_utility.get_object(self.user_ds_id)
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)
