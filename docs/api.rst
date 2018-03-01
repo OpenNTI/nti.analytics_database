@@ -17,6 +17,11 @@ Boards
 
 .. automodule:: nti.analytics_database.boards
 
+Database
+========
+
+.. automodule:: nti.analytics_database.database
+
 Enrollments
 ===========
 
@@ -31,6 +36,11 @@ Mixins
 ======
 
 .. automodule:: nti.analytics_database.meta_mixins
+
+Metadata
+========
+
+.. automodule:: nti.analytics_database.metadata
 
 MimeTypes
 =========
@@ -86,3 +96,8 @@ Users
 =====
 
 .. automodule:: nti.analytics_database.users
+
+ZCML
+====
+
+.. automodule:: nti.analytics_database.zcml
