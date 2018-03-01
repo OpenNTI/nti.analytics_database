@@ -81,4 +81,5 @@ class AnalyticsDatabaseTest(unittest.TestCase):
 
     def tearDown(self):
         # pylint: disable=no-member
+        self.metadata.drop_all(bind=self.engine)
         self.session.close()
