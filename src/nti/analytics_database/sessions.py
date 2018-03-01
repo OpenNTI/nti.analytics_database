@@ -19,6 +19,8 @@ from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 
+from zope import interface
+
 from nti.analytics_database import SESSION_COLUMN_TYPE
 
 from nti.analytics_database import Base
@@ -74,13 +76,13 @@ class Sessions(Base):
 
 class IpGeoLocation(Base):
 
-    # FIXME: Since there is a table dedicated to storing locations, it would
+    # NOTE: Since there is a table dedicated to storing locations, it would
     # make sense to rename this table to IpLocation or something similar, to
     # indicate that this table stores a list of distinct IPs, but not their
     # geographical locations.
     __tablename__ = 'IpGeoLocation'
 
-    # TODO: Remove lat/long
+    # NOTE: Remove lat/long
     # Store by user_id for ease of lookup.
     ip_id = Column('ip_id', Integer, Sequence('ip_id_seq'),
                    index=True, primary_key=True)
@@ -140,3 +142,7 @@ class UserAgents(Base):
     # user-agents?
     user_agent = Column('user_agent', String(512), unique=True,
                         index=True, nullable=False)
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

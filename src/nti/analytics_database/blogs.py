@@ -20,6 +20,7 @@ from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 
 from zope import component
+from zope import interface
 
 from nti.analytics_database import INTID_COLUMN_TYPE
 
@@ -166,3 +167,7 @@ class BlogCommentLikes(Base, BaseTableMixin, BlogCommentMixin, CreatorMixin):
     __table_args__ = (
         PrimaryKeyConstraint('user_id', 'comment_id'),
     )
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

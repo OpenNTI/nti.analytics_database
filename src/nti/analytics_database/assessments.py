@@ -27,6 +27,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Sequence
 
 from zope import component
+from zope import interface
 
 from nti.analytics_database import INTID_COLUMN_TYPE
 from nti.analytics_database import NTIID_COLUMN_TYPE
@@ -360,3 +361,7 @@ class AssignmentViews(Base, AssignmentViewMixin):
                                 Integer,
                                 Sequence('assignment_view_id_seq'),
                                 primary_key=True)
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

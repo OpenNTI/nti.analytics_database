@@ -16,6 +16,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 
+from zope import interface
+
 from nti.analytics_database import Base
 
 from nti.analytics_database.meta_mixins import CourseMixin
@@ -68,3 +70,7 @@ class CourseDrops(Base, BaseTableMixin, CourseMixin):
     __table_args__ = (
         PrimaryKeyConstraint('course_id', 'user_id', 'timestamp'),
     )
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

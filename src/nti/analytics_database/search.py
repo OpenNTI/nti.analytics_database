@@ -15,6 +15,8 @@ from sqlalchemy import Integer
 
 from sqlalchemy.schema import Sequence
 
+from zope import interface
+
 from nti.analytics_database import Base
 
 from nti.analytics_database.meta_mixins import BaseTableMixin
@@ -47,3 +49,7 @@ class SearchQueries(Base, BaseTableMixin, RootContextMixin):
     @property
     def SearchTypes(self):
         return self.search_types.split('/') if self.search_types else self.search_types
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

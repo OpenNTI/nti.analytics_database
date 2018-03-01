@@ -7,9 +7,7 @@ from __future__ import absolute_import
 
 # pylint: disable=protected-access,too-many-public-methods,arguments-differ
 
-import os
 import unittest
-import importlib
 
 from sqlalchemy import create_engine as sqlalchemy_create_engine
 
@@ -20,19 +18,13 @@ from sqlalchemy.pool import StaticPool
 
 from nti.analytics_database import Base
 
+from zope.component.hooks import setHooks
 
-def _import_db_modules():
-    """
-    Import modules to create database
-    """
-    path = os.path.join(os.path.dirname(__file__), '..')
-    files = [os.path.splitext(f)[0] for f in os.listdir(path)
-             if os.path.isfile(os.path.join(path, f)) and f.endswith('.py')]
-    for name in files:
-        name = "nti.analytics_database.%s" % name
-        importlib.import_module(name)
-_import_db_modules()
-del _import_db_modules
+from nti.testing.layers import GCLayerMixin
+from nti.testing.layers import ZopeComponentLayer
+from nti.testing.layers import ConfiguringLayerMixin
+
+import zope.testing.cleanup
 
 
 def create_engine(dburi='sqlite://'):
@@ -51,7 +43,34 @@ def create_session(session_maker):
     return scoped_session(session_maker)
 
 
+class SharedConfiguringTestLayer(ZopeComponentLayer,
+                                 GCLayerMixin,
+                                 ConfiguringLayerMixin):
+
+    set_up_packages = ('nti.analytics_database',)
+
+    @classmethod
+    def setUp(cls):
+        setHooks()
+        cls.setUpPackages()
+
+    @classmethod
+    def tearDown(cls):
+        cls.tearDownPackages()
+        zope.testing.cleanup.cleanUp()
+
+    @classmethod
+    def testSetUp(cls, unused_test=None):
+        setHooks()
+
+    @classmethod
+    def testTearDown(cls):
+        pass
+
+
 class AnalyticsDatabaseTest(unittest.TestCase):
+
+    layer = SharedConfiguringTestLayer
 
     def setUp(self):
         self.engine = create_engine()
@@ -62,4 +81,5 @@ class AnalyticsDatabaseTest(unittest.TestCase):
 
     def tearDown(self):
         # pylint: disable=no-member
+        self.metadata.drop_all(bind=self.engine)
         self.session.close()

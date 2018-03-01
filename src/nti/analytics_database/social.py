@@ -20,6 +20,7 @@ from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 
 from zope import component
+from zope import interface
 
 from nti.analytics_database import Base
 from nti.analytics_database import INTID_COLUMN_TYPE
@@ -174,3 +175,7 @@ class ContactsRemoved(Base, BaseTableMixin, FriendMixin):
     __table_args__ = (
         PrimaryKeyConstraint('user_id', 'target_id', 'timestamp'),
     )
+
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)

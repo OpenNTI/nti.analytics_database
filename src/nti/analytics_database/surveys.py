@@ -16,6 +16,8 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from sqlalchemy.schema import Sequence
 
+from zope import interface
+
 from nti.analytics_database import Base
 from nti.analytics_database import NTIID_COLUMN_TYPE
 from nti.analytics_database import INTID_COLUMN_TYPE
@@ -90,3 +92,6 @@ class SurveyViews(Base, SurveyIdMixin, ResourceMixin, BaseViewMixin, TimeLengthM
             result = self._resource.resource_ds_id
         return result
 
+
+from nti.analytics_database.interfaces import IDatabaseCreator
+interface.moduleProvides(IDatabaseCreator)
