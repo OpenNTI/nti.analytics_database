@@ -13,6 +13,12 @@ from __future__ import absolute_import
 from zope import interface
 
 
+class IDatabaseCreator(interface.Interface):
+    """
+    Marker interface for database creators
+    """
+
+
 class IAnalyticsDatabase(interface.Interface):
     """
     An utility interface for the Analytics database
