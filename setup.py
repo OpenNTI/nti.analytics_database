@@ -10,7 +10,6 @@ TESTS_REQUIRE = [
     'fudge',
     'nti.testing',
     'pymysql',
-    'zope.dottedname',
     'zope.testrunner',
 ]
 
@@ -53,6 +52,7 @@ setup(
         'simplejson',
         'sqlalchemy',
         'zope.component',
+        'zope.dottedname',
         'zope.interface',
         'zope.sqlalchemy',
     ],
