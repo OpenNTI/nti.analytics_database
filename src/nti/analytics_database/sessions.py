@@ -76,13 +76,12 @@ class Sessions(Base):
 
 class IpGeoLocation(Base):
 
-    # NOTE: Since there is a table dedicated to storing locations, it would
+    # TODO: Since there is a table dedicated to storing locations, it would
     # make sense to rename this table to IpLocation or something similar, to
     # indicate that this table stores a list of distinct IPs, but not their
     # geographical locations.
     __tablename__ = 'IpGeoLocation'
 
-    # NOTE: Remove lat/long
     # Store by user_id for ease of lookup.
     ip_id = Column('ip_id', Integer, Sequence('ip_id_seq'),
                    index=True, primary_key=True)
@@ -93,10 +92,6 @@ class IpGeoLocation(Base):
     ip_addr = Column('ip_addr', String(64), index=True)
 
     country_code = Column('country_code', String(8))
-
-    latitude = Column('latitude', Float())
-
-    longitude = Column('longitude', Float())
 
     # Nullable because this data is eventually consistent (plus it may be null).
     location_id = Column('location_id', Integer, nullable=True, index=True)
