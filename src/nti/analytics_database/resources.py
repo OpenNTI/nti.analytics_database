@@ -33,7 +33,7 @@ class Resources(Base):
     resource_ds_id = Column('resource_ds_id', NTIID_COLUMN_TYPE, index=True,
                             nullable=False)
 
-    resource_display_name = Column('resource_display_name', String(128),
+    resource_display_name = Column('resource_display_name', String(256),
                                    unique=False, nullable=True)
 
     # Only applicable for videos

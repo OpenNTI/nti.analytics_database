@@ -45,8 +45,7 @@ class TestSessions(AnalyticsDatabaseTest):
         self.session.add(user)
 
         iploc = IpGeoLocation(ip_id=1, user_id=1, ip_addr=u'10.50.42.228',
-                              country_code=u'US',
-                              latitude=35.2226, longitude=97.4395, location_id=1)
+                              country_code=u'US',location_id=1)
         self.session.add(iploc)
 
         session = Sessions(session_id=1, user_id=1, ip_addr=u'10.50.42.228')
