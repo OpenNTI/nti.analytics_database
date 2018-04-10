@@ -19,11 +19,11 @@ from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import ResourceViewMixin
 
 
-class SCORMResourceViews(Base, ResourceViewMixin, TimeLengthMixin):
+class SCORMPackageLaunches(Base, ResourceViewMixin, TimeLengthMixin):
     
-    __tablename__ = 'SCORMResourceViews'
+    __tablename__ = 'SCORMPackageLaunches'
     
-    resource_view_id = Column('resource_view_id', Integer,
-                              Sequence('resource_view_id_seq'),
-                              primary_key=True)
+    scorm_package_launch_id = Column('scorm_package_launch_id', Integer,
+                                     Sequence('scorm_package_launch_id_seq'),
+                                     primary_key=True)
     
