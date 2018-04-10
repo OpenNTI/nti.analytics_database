@@ -16,6 +16,7 @@
 	<utility component=".resource_views" name="resource_views" />
 	<utility component=".resources" name="resources" />
 	<utility component=".root_context" name="root_context" />
+	<utility component=".scorm" name="scorm" />
 	<utility component=".search" name="search" />
 	<utility component=".sessions" name="sessions" />
 	<utility component=".social" name="social" />
