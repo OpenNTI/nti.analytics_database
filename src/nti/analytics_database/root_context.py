@@ -38,7 +38,7 @@ class RootContext(object):
                            nullable=True, index=True)
 
     context_name = Column('context_name',
-                          String(64),
+                          String(128),
                           nullable=True, unique=False, index=True)
 
     context_long_name = Column('context_long_name',
@@ -74,7 +74,7 @@ class RootContextId(Base):
     __tablename__ = 'ContextId'
 
     # Start at 100 for simple migration.
-    context_id = Column('context_id', Integer, 
+    context_id = Column('context_id', Integer,
                         Sequence('context_id_seq', start=1000),
                         nullable=False, primary_key=True)
 _RootContextId = RootContextId  # alias BWC
