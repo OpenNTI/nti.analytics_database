@@ -10,6 +10,7 @@
 	<utility component=".blogs" name="blogs" />
 	<utility component=".boards" name="boards" />
 	<utility component=".enrollments" name="enrollments" />
+	<utility component=".lti" name="lti" />
 	<utility component=".mime_types" name="mime_types" />
 	<utility component=".profile_views" name="profile_views" />
 	<utility component=".resource_tags" name="resource_tags" />
