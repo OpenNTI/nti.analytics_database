@@ -7,6 +7,7 @@ from __future__ import division
 
 from hamcrest import assert_that
 from hamcrest import is_
+from hamcrest import none
 
 import fudge
 
@@ -21,8 +22,13 @@ class TestLTI(AnalyticsDatabaseTest):
 
     def test_coverage(self):
 
-        launch = LTIAssetLaunches(lti_asset_launch_id=1,
-                                  lti_asset_launch_id_seq=1)
+        from IPython.core.debugger import Tracer;Tracer()()
+
+        launch = LTIAssetLaunches(lti_asset_launches_id=1,
+                                  resource_id=1,
+                                  course_id=1,
+                                  user_id=1,
+                                  context_path=u'a/b')
         self.session.add(launch)
 
         self.session.commit()
@@ -37,7 +43,14 @@ class TestLTI(AnalyticsDatabaseTest):
         component.getGlobalSiteManager().registerUtility(intid,
                                                          IAnalyticsIntidIdentifier)
 
-        assert_that(launch.lti_tool_launches_id, is_(fake))
+        assert_that(launch.AssetId, is_(None))
+        assert_that(launch.ContextPath, is_(['a', 'b']))
+        assert_that(launch.Title, is_(none()))
+
+        assert_that(launch.user, is_(fake))
+        fake2 = fudge.Fake()
+        launch.user = fake2
+        assert_that(launch.user, is_(fake2))
 
         component.getGlobalSiteManager().unregisterUtility(intid,
                                                          IAnalyticsIntidIdentifier)
