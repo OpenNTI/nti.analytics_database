@@ -22,10 +22,10 @@ logger = __import__('logging').getLogger(__name__)
 
 class LTIAssetLaunches(Base, ResourceViewMixin, TimeLengthMixin):
 
-    __tablename__ = 'LTIToolLaunches'
+    __tablename__ = 'LTIAssetLaunches'
 
-    lti_tool_launches_id = Column('lti_tool_launch_id', Integer,
-                                  Sequence('lti_tool_launch_id_seq'),
+    lti_tool_launches_id = Column('lti_asset_launch_id', Integer,
+                                  Sequence('lti_asset_launch_id_seq'),
                                   primary_key=True)
 
 
