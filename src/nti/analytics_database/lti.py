@@ -30,13 +30,6 @@ class LTIAssetLaunches(Base, ResourceViewMixin, TimeLengthMixin):
                                    Sequence('lti_asset_launch_id_seq'),
                                    primary_key=True)
 
-    @property
-    def AssetId(self):
-        result = self._resource
-        if result is not None:
-            result = self._resource.resourse_ds_id
-        return result
-
 
 from nti.analytics_database.interfaces import IDatabaseCreator
 
