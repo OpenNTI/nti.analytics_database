@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
-from __future__ import division
 
-from hamcrest import assert_that
+# pylint: disable=protected-access,too-many-public-methods,no-member
+
 from hamcrest import is_
+from hamcrest import assert_that
 
 from nti.analytics_database.lti import LTIAssetLaunches
 
@@ -24,7 +26,6 @@ class TestLTI(AnalyticsDatabaseTest):
                                   lti_asset_launches_id=1)
 
         self.session.add(launch)
-
         self.session.commit()
 
         assert_that(launch.ContextPath, is_(['a', 'b']))
