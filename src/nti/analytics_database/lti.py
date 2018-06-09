@@ -1,20 +1,21 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*
+"""
+.. $Id$
+"""
 
+from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
-from __future__ import division
 
 from sqlalchemy import Column
 from sqlalchemy import Integer
 
 from sqlalchemy.schema import Sequence
 
-from zope import interface, component
+from zope import interface
 
 from nti.analytics_database import Base
-
-from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 
 from nti.analytics_database.meta_mixins import TimeLengthMixin
 from nti.analytics_database.meta_mixins import ResourceViewMixin
@@ -32,5 +33,4 @@ class LTIAssetLaunches(Base, ResourceViewMixin, TimeLengthMixin):
 
 
 from nti.analytics_database.interfaces import IDatabaseCreator
-
 interface.moduleProvides(IDatabaseCreator)
