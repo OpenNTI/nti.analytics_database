@@ -58,7 +58,8 @@ class Sessions(Base):
 
     geo_location = relationship('IpGeoLocation',
                                 foreign_keys=[ip_addr],
-                                primaryjoin='IpGeoLocation.ip_addr == Sessions.ip_addr')
+                                primaryjoin="and_(IpGeoLocation.ip_addr == Sessions.ip_addr,"
+                                            "IpGeoLocation.user_id == Sessions.user_id)")
 
     @property
     def Location(self):
