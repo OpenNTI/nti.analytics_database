@@ -8,7 +8,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-from sqlalchemy import Float
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Integer
@@ -25,12 +24,14 @@ from nti.analytics_database import SESSION_COLUMN_TYPE
 
 from nti.analytics_database import Base
 
+from nti.analytics_database.meta_mixins import UserMixin
+
 from nti.property.property import alias
 
 logger = __import__('logging').getLogger(__name__)
 
 
-class Sessions(Base):
+class Sessions(Base, UserMixin):
 
     __tablename__ = 'Sessions'
 
