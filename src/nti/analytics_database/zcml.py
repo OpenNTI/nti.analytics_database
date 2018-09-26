@@ -16,7 +16,8 @@ from zope import interface
 
 from zope.component.zcml import utility
 
-from zope.schema import Bool
+from zope.configuration.fields import Bool
+
 from zope.schema import TextLine
 
 from nti.analytics_database.database import AnalyticsDB
