@@ -12,12 +12,12 @@ from __future__ import absolute_import
 
 import functools
 
-from zope import schema
 from zope import interface
 
 from zope.component.zcml import utility
 
-from zope.configuration import fields
+from zope.schema import Bool
+from zope.schema import TextLine
 
 from nti.analytics_database.database import AnalyticsDB
 
@@ -30,12 +30,12 @@ class IRegisterAnalyticsDB(interface.Interface):
     """
     The arguments needed for registering the analytics db.
     """
-    dburi = fields.TextLine(title=u"db uri", required=False)
-    twophase = schema.Bool(title=u"twophase commit", required=False)
-    autocommit = fields.Bool(title=u"autocommit", required=False)
-    defaultSQLite = schema.Bool(title=u"default to SQLite", required=False)
-    testmode = schema.Bool(title=u"start the db in test mode", required=False)
-    config = fields.TextLine(title=u"path to config file", required=False)
+    dburi = TextLine(title=u"db uri", required=False)
+    twophase = Bool(title=u"twophase commit", required=False)
+    autocommit = Bool(title=u"autocommit", required=False)
+    defaultSQLite = Bool(title=u"default to SQLite", required=False)
+    testmode = Bool(title=u"start the db in test mode", required=False)
+    config = TextLine(title=u"path to config file", required=False)
 
 
 def registerAnalyticsDB(_context, dburi=None, twophase=False, autocommit=False,
