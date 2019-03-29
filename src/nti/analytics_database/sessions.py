@@ -121,7 +121,7 @@ class Location(Base):
 
     state = Column('state', String(64))
 
-    country = Column('country', String(64))
+    country = Column('country', String(128))
 
 
 class UserAgents(Base):
