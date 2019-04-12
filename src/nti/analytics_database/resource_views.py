@@ -84,7 +84,7 @@ class VideoEvents(Base, ResourceViewMixin, TimeLengthMixin):
     play_speed = Column('play_speed', String(16), nullable=True)
 
     player_configuration = Column('player_configuration',
-                                  Enum('inline', 'mediaviewer-full', 'mediaviewer-split', 'mediaviewer-transcript', validate_strings=True),
+                                  Enum('inline', 'mediaviewer-full', 'mediaviewer-split', 'mediaviewer-transcript', 'media-modal', validate_strings=True),
                                   nullable=True)
 
 
