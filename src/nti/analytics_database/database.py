@@ -83,13 +83,12 @@ class AnalyticsDB(object):
                                        poolclass=StaticPool)
 
             else:
-                # FIXME: Debugging xa tx issues in alpha
                 result = create_engine(self.dburi,
                                        pool_size=self.pool_size,
                                        max_overflow=self.max_overflow,
                                        pool_recycle=self.pool_recycle,
-                                       echo=True,
-                                       echo_pool=True)
+                                       echo=False,
+                                       echo_pool=False)
         except TypeError:
             # SQLite does not use pooling anymore.
             result = create_engine(self.dburi)
