@@ -39,7 +39,7 @@ logger = __import__('logging').getLogger(__name__)
 
 def _make_safe_for_logging(uri):
     """
-    Attempts to obscure passwords in the uri so they can be logged
+    Attempts to obscure passwords in the uri so they can't be logged
     """
     def stars(m):
 	return ':'+ ('*'*len(m.group(1)))+'@'
