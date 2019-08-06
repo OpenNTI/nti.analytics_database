@@ -9,9 +9,13 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import os
+import re
+
 from six.moves import configparser
 
 import transaction
+
+from six.moves import urllib_parse
 
 from sqlalchemy import create_engine
 
@@ -31,6 +35,20 @@ from nti.analytics_database.interfaces import IAnalyticsDB
 from nti.analytics_database.metadata import AnalyticsMetadata
 
 logger = __import__('logging').getLogger(__name__)
+
+
+def _make_safe_for_logging(uri):
+    """
+    Attempts to obscure passwords in the uri so they can't be logged
+    """
+    def stars(m):
+	return ':'+ ('*'*len(m.group(1)))+'@'
+
+    parts = list(urllib_parse.urlparse(uri))
+    netloc = parts[1]
+    netloc = re.sub(':(.*?)@', stars, netloc)
+    parts[1] = netloc
+    return urllib_parse.urlunparse(parts)
 
 
 @interface.implementer(IAnalyticsDB)
@@ -66,7 +84,7 @@ class AnalyticsDB(object):
 
         if metadata:
             logger.info("Connecting to database at '%s' (twophase=%s) (testmode=%s)",
-                        self.dburi, self.twophase, self.testmode)
+                        _make_safe_for_logging(self.dburi), self.twophase, self.testmode)
             self.metadata = AnalyticsMetadata(self.engine)
         else:
             self.metadata = None
