@@ -44,10 +44,29 @@ def _make_safe_for_logging(uri):
     def stars(m):
 	return ':'+ ('*'*len(m.group(1)))+'@'
 
+    def _make_parts_safe(parts):
+        netloc = parts[1]
+        netloc = re.sub(':(.*?)@', stars, netloc)
+        parts[1] = netloc
+        return parts
+
+    # Some of our uris may have invalid schemes and therefore don't
+    # parse correctly with urlparse.
     parts = list(urllib_parse.urlparse(uri))
     netloc = parts[1]
-    netloc = re.sub(':(.*?)@', stars, netloc)
-    parts[1] = netloc
+    if netloc:
+        parts = _make_parts_safe(parts)
+    else:
+        # Well that is weird we aren't valid and can't be parsed
+        # we've seen this with urls that use the scheme gevent_mysql
+        # replace the scheme with a valid scheme to do parsing
+        orig_scheme, remaining = uri.split(':', 1)
+        fixed_uri = ':'.join(['http', remaining])
+        fixed_parts = list(urllib_parse.urlparse(fixed_uri))
+        if fixed_parts[1]:
+            parts = _make_parts_safe(fixed_parts)
+            parts[0] = orig_scheme
+       
     return urllib_parse.urlunparse(parts)
 
 
