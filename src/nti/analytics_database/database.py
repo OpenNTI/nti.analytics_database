@@ -147,7 +147,9 @@ class AnalyticsDB(object):
     def session(self):
         # This session_scoped object acts as a proxy to the underlying,
         # thread-local session objects.
-        return register(scoped_session(self.sessionmaker))
+        result = scoped_session(self.sessionmaker)
+        register(result)
+        return result
 
     def savepoint(self):
         if not self.testmode and not self.defaultSQLite:
