@@ -84,7 +84,6 @@ class AnalyticsDB(object):
         self.autocommit = autocommit
         self.testmode = testmode
         self.defaultSQLite = defaultSQLite
-        from IPython.terminal.debugger import set_trace;set_trace()
         if defaultSQLite and not dburi:
             data_dir = os.getenv('DATASERVER_DATA_DIR') or '/tmp'
             data_dir = os.path.expanduser(data_dir)
