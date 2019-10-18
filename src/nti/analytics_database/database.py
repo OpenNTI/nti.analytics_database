@@ -28,7 +28,7 @@ from zope import interface
 
 from zope.cachedescriptors.property import Lazy
 
-from zope.sqlalchemy import ZopeTransactionExtension
+from zope.sqlalchemy import register
 
 from nti.analytics_database.interfaces import IAnalyticsDB
 
@@ -42,7 +42,7 @@ def _make_safe_for_logging(uri):
     Attempts to obscure passwords in the uri so they can't be logged
     """
     def stars(m):
-	return ':'+ ('*'*len(m.group(1)))+'@'
+        return ':'+ ('*'*len(m.group(1)))+'@'
 
     def _make_parts_safe(parts):
         netloc = parts[1]
@@ -66,7 +66,7 @@ def _make_safe_for_logging(uri):
         if fixed_parts[1]:
             parts = _make_parts_safe(fixed_parts)
             parts[0] = orig_scheme
-       
+
     return urllib_parse.urlunparse(parts)
 
 
@@ -84,7 +84,7 @@ class AnalyticsDB(object):
         self.autocommit = autocommit
         self.testmode = testmode
         self.defaultSQLite = defaultSQLite
-
+        from IPython.terminal.debugger import set_trace;set_trace()
         if defaultSQLite and not dburi:
             data_dir = os.getenv('DATASERVER_DATA_DIR') or '/tmp'
             data_dir = os.path.expanduser(data_dir)
@@ -140,15 +140,14 @@ class AnalyticsDB(object):
             # Use the ZTE for transaction handling.
             result = sessionmaker(bind=self.engine,
                                   autoflush=True,
-                                  twophase=self.twophase,
-                                  extension=ZopeTransactionExtension())
+                                  twophase=self.twophase)
         return result
 
     @Lazy
     def session(self):
         # This session_scoped object acts as a proxy to the underlying,
         # thread-local session objects.
-        return scoped_session(self.sessionmaker)
+        return register(scoped_session(self.sessionmaker))
 
     def savepoint(self):
         if not self.testmode and not self.defaultSQLite:
