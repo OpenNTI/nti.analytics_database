@@ -147,7 +147,9 @@ class AnalyticsDB(object):
         # This session_scoped object acts as a proxy to the underlying,
         # thread-local session objects.
         result = scoped_session(self.sessionmaker)
-        register(result)
+        if self.dburi == 'sqlite://' and not self.autocommit:
+            # Tests
+            register(result)
         return result
 
     def savepoint(self):
