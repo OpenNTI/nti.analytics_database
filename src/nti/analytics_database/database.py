@@ -17,6 +17,7 @@ import transaction
 
 from six.moves import urllib_parse
 
+from sqlalchemy import event
 from sqlalchemy import create_engine
 
 from sqlalchemy.orm import sessionmaker
@@ -109,25 +110,39 @@ class AnalyticsDB(object):
 
     @Lazy
     def engine(self):
-        try:
-            if self.dburi == 'sqlite://':
-                # In-memory connections have a different db per connection, so let's make
-                # them share a db connection to avoid missing metadata issues.
-                # Only for devmode.
-                result = create_engine(self.dburi,
-                                       connect_args={'check_same_thread': False},
-                                       poolclass=StaticPool)
+        if self.dburi == 'sqlite://':
+            # In-memory connections have a different db per connection, so let's make
+            # them share a db connection to avoid missing metadata issues.
+            # Only for devmode.
+            result = create_engine(self.dburi,
+                                   connect_args={'check_same_thread': False},
+                                   poolclass=StaticPool)
 
-            else:
-                result = create_engine(self.dburi,
-                                       pool_size=self.pool_size,
-                                       max_overflow=self.max_overflow,
-                                       pool_recycle=self.pool_recycle,
-                                       echo=False,
-                                       echo_pool=False)
-        except TypeError:
-            # SQLite does not use pooling anymore.
-            result = create_engine(self.dburi)
+        elif self.dburi.startswith('sqlite'):
+            result = create_engine(self.dburi,
+                                   isolation_level=None)
+
+            @event.listens_for(result, "connect")
+            def do_connect(dbapi_connection, unused_connection_record):
+                # disable pysqlite's emitting of the BEGIN statement entirely.
+                # also stops it from emitting COMMIT before any DDL.
+                dbapi_connection.isolation_level = None
+                # Ensures reads are not blocked by writes
+                # https://www.sqlite.org/wal.html
+                dbapi_connection.execute('PRAGMA journal_mode=wal').fetchall()
+
+            # This will allow each tx to have its own temp copy of the db
+            @event.listens_for(result, "begin")
+            def do_begin(conn):
+                conn.execute("BEGIN DEFERRED TRANSACTION")
+
+        else:
+            result = create_engine(self.dburi,
+                                   pool_size=self.pool_size,
+                                   max_overflow=self.max_overflow,
+                                   pool_recycle=self.pool_recycle,
+                                   echo=False,
+                                   echo_pool=False)
         return result
 
     @Lazy
