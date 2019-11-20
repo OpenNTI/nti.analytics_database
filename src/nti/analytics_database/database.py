@@ -88,7 +88,9 @@ class AnalyticsDB(object):
             data_dir = os.getenv('DATASERVER_DATA_DIR') or '/tmp'
             data_dir = os.path.expanduser(data_dir)
             data_file = os.path.join(data_dir, 'analytics-sqlite.db')
-            self.dburi = "sqlite:///%s" % data_file
+            # Default to gevent friendly sqlite driver
+            # See relstorage and nti.monkey
+            self.dburi = "gevent+sqlite:///%s" % data_file
         elif config:
             config_name = os.path.expandvars(config)
             parser = configparser.ConfigParser()
@@ -109,25 +111,24 @@ class AnalyticsDB(object):
 
     @Lazy
     def engine(self):
-        try:
-            if self.dburi == 'sqlite://':
-                # In-memory connections have a different db per connection, so let's make
-                # them share a db connection to avoid missing metadata issues.
-                # Only for devmode.
-                result = create_engine(self.dburi,
-                                       connect_args={'check_same_thread': False},
-                                       poolclass=StaticPool)
+        if self.dburi == 'sqlite://':
+            # In-memory connections have a different db per connection, so let's make
+            # them share a db connection to avoid missing metadata issues.
+            # Only for devmode.
+            result = create_engine(self.dburi,
+                                   connect_args={'check_same_thread': False},
+                                   poolclass=StaticPool)
 
-            else:
-                result = create_engine(self.dburi,
-                                       pool_size=self.pool_size,
-                                       max_overflow=self.max_overflow,
-                                       pool_recycle=self.pool_recycle,
-                                       echo=False,
-                                       echo_pool=False)
-        except TypeError:
-            # SQLite does not use pooling anymore.
+        elif   self.dburi.startswith('sqlite') \
+            or self.dburi.startswith('gevent+sqlite'):
             result = create_engine(self.dburi)
+        else:
+            result = create_engine(self.dburi,
+                                   pool_size=self.pool_size,
+                                   max_overflow=self.max_overflow,
+                                   pool_recycle=self.pool_recycle,
+                                   echo=False,
+                                   echo_pool=False)
         return result
 
     @Lazy
