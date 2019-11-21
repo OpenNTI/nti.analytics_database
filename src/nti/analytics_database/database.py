@@ -17,6 +17,7 @@ import transaction
 
 from six.moves import urllib_parse
 
+from sqlalchemy import event
 from sqlalchemy import create_engine
 
 from sqlalchemy.orm import sessionmaker
@@ -114,7 +115,7 @@ class AnalyticsDB(object):
         if self.dburi == 'sqlite://':
             # In-memory connections have a different db per connection, so let's make
             # them share a db connection to avoid missing metadata issues.
-            # Only for devmode.
+            # Only for tests.
             result = create_engine(self.dburi,
                                    connect_args={'check_same_thread': False},
                                    poolclass=StaticPool)
@@ -122,6 +123,10 @@ class AnalyticsDB(object):
         elif   self.dburi.startswith('sqlite') \
             or self.dburi.startswith('gevent+sqlite'):
             result = create_engine(self.dburi)
+
+            @event.listens_for(result, "begin")
+            def do_begin(conn):
+                conn.execute("BEGIN DEFERRED TRANSACTION")
         else:
             result = create_engine(self.dburi,
                                    pool_size=self.pool_size,
