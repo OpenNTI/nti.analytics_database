@@ -9,6 +9,7 @@ entry_points = {
 TESTS_REQUIRE = [
     'fudge',
     'nti.testing',
+    'nti.monkey',
     'pymysql',
     'zope.testrunner',
 ]

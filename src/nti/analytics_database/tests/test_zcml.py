@@ -28,6 +28,9 @@ from nti.analytics_database.database import AnalyticsDB
 
 from nti.analytics_database.interfaces import IAnalyticsDB
 
+from nti.monkey.patch_sqlalchemy_on_import import patch
+patch()
+
 import nti.testing.base
 
 pymysql.install_as_MySQLdb()
