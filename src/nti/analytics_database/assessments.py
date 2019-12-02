@@ -73,7 +73,7 @@ class AssignmentsTaken(Base, AssignmentMixin):
     submission_id = Column('submission_id', INTID_COLUMN_TYPE,
                            nullable=True, index=True, autoincrement=False)
 
-    assignment_taken_id = Column('assignment_taken_id', Integer, 
+    assignment_taken_id = Column('assignment_taken_id', Integer,
                                  Sequence('assignments_taken_seq'),
                                  index=True, nullable=False, primary_key=True)
 
@@ -281,7 +281,7 @@ class FeedbackUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
 
     __tablename__ = 'FeedbackUserFileUploadMimeTypes'
 
-    feedback_id = Column('feedback_id', Integer, 
+    feedback_id = Column('feedback_id', Integer,
                          ForeignKey("AssignmentFeedback.feedback_id"),
                          nullable=False, index=True)
 
@@ -300,7 +300,7 @@ class SelfAssessmentsTaken(Base, AssignmentMixin):
     submission_id = Column('submission_id', INTID_COLUMN_TYPE,
                            nullable=True, index=True, autoincrement=False)
 
-    self_assessment_id = Column('self_assessment_id', Integer, 
+    self_assessment_id = Column('self_assessment_id', Integer,
                                 Sequence('self_assessment_seq'),
                                 index=True, nullable=False, primary_key=True)
 
