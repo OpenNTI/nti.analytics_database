@@ -22,6 +22,7 @@ from sqlalchemy import ForeignKey
 
 from sqlalchemy.ext.declarative import declared_attr
 
+from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
@@ -218,7 +219,6 @@ class AssignmentDetails(Base, DetailMixin, AssignmentSubmissionMixin):
     def Grader(self):
         return self.grade and self.grade.Grader
 
-
 class AssignmentGrades(Base, AssignmentSubmissionMixin, GradeMixin):
 
     __tablename__ = 'AssignmentGrades'
@@ -244,6 +244,9 @@ class AssignmentDetailGrades(Base, GradeDetailMixin, AssignmentSubmissionMixin):
                                    ForeignKey("AssignmentDetails.assignment_details_id"),
                                    unique=True,
                                    primary_key=True)
+
+    taken_record = relationship("AssignmentsTaken",
+                                backref=backref('grade_details', lazy='noload'))
 
 # Each feedback 'tree' should have an associated grade with it.
 
@@ -275,6 +278,9 @@ class AssignmentFeedback(Base, AssignmentSubmissionMixin, DeletedMixin):
         for mime_type in self._file_mime_types or ():
             result[mime_type.mime_type] = mime_type.count
         return result
+
+    taken_record = relationship("AssignmentsTaken",
+                                backref=backref('feedback', lazy='noload'))
 
 
 class FeedbackUserFileUploadMimeTypes(Base, FileMimeTypeMixin):
@@ -324,6 +330,9 @@ class SelfAssessmentDetails(Base, BaseTableMixin, DetailMixin, GradeDetailMixin)
                                         Integer,
                                         Sequence('self_assessment_details_seq'),
                                         primary_key=True)
+
+    taken_record = relationship("SelfAssessmentsTaken",
+                                backref=backref('details', lazy='noload'))
 
 
 class AssignmentViewMixin(AssignmentIdMixin, ResourceMixin, BaseViewMixin, TimeLengthMixin):
