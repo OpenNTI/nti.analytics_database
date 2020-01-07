@@ -68,6 +68,10 @@ class BaseTableMixin(UserMixin):
                       ForeignKey("Sessions.session_id"), nullable=True)
 
     @declared_attr
+    def _session_record(self):
+        return relationship('Sessions', lazy="select", foreign_keys=[self.session_id])
+
+    @declared_attr
     def user_id(self):
         return Column('user_id', Integer, ForeignKey("Users.user_id"),
                       index=True, nullable=True)
