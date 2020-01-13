@@ -128,6 +128,10 @@ class CourseMixin(object):
                        autoincrement=False)
 
     @declared_attr
+    def _course_record(self):
+        return relationship('Courses', lazy="select", foreign_keys=[self.course_id])
+
+    @declared_attr
     def __table_args__(self):
         return (Index('ix_%s_user_course' % self.__tablename__, 'user_id', 'course_id'),)
 
