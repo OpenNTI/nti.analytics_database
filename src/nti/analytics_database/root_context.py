@@ -30,15 +30,31 @@ from nti.analytics_database import Base
 logger = __import__('logging').getLogger(__name__)
 
 
+class RootContextId(Base):
+    """
+    A table to share a sequence between our RootContext tables; needed in mysql.
+    """
+
+    __tablename__ = 'ContextId'
+
+    # Start at 100 for simple migration.
+    context_id = Column('context_id', Integer,
+                        Sequence('context_id_seq', start=1000),
+                        nullable=False, primary_key=True)
+_RootContextId = RootContextId  # alias BWC
+
+
 class RootContext(object):
     """
     Stores root context objects of other events, such as courses and books.
     """
 
-    context_id = Column('context_id', Integer,
-                        ForeignKey("RootContextId.context_id"),
-                        index=True,
-                        nullable=False, primary_key=True, autoincrement=False)
+    @declared_attr
+    def context_id(self):
+        return Column('context_id', Integer,
+                      ForeignKey("ContextId.context_id"),
+                      index=True,
+                      nullable=False, primary_key=True, autoincrement=False)
 
     context_ds_id = Column('context_ds_id',
                            NTIID_COLUMN_TYPE,
@@ -75,20 +91,6 @@ class Courses(Base, RootContext):
 class Books(Base, RootContext):
 
     __tablename__ = 'Books'
-
-
-class RootContextId(Base):
-    """
-    A table to share a sequence between our RootContext tables; needed in mysql.
-    """
-
-    __tablename__ = 'ContextId'
-
-    # Start at 100 for simple migration.
-    context_id = Column('context_id', Integer,
-                        Sequence('context_id_seq', start=1000),
-                        nullable=False, primary_key=True)
-_RootContextId = RootContextId  # alias BWC
 
 
 from nti.analytics_database.interfaces import IDatabaseCreator
