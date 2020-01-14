@@ -124,7 +124,11 @@ class ReferrerMixin(object):
 
 class CourseMixin(object):
 
-    course_id = Column('course_id', Integer, nullable=False, index=True,
+    @declared_attr
+    def course_id(self):
+        return Column('course_id', Integer,
+                       ForeignKey("Courses.context_id"),
+                       nullable=False, index=True,
                        autoincrement=False)
 
     @declared_attr
@@ -195,7 +199,7 @@ class ResourceMixin(RootContextMixin):
 
     @declared_attr
     def _resource(self):
-        return relationship('Resources', lazy="select")
+        return relationship('Resources', lazy="select", foreign_keys=[self.resource_id])
 
     @declared_attr
     def resource_id(self):
@@ -357,7 +361,7 @@ class FileMimeTypeMixin(object):
 
     @declared_attr
     def _mime_type(self):
-        return relationship('FileMimeTypes', lazy="select")
+        return relationship('FileMimeTypes', lazy="select", foreign_keys=[self.file_mime_type_id])
 
     @property
     def mime_type(self):

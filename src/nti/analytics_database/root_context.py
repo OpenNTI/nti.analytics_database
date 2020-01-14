@@ -13,6 +13,11 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import Interval
+from sqlalchemy import ForeignKey
+
+from sqlalchemy.ext.declarative import declared_attr
+
+from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 
@@ -30,7 +35,9 @@ class RootContext(object):
     Stores root context objects of other events, such as courses and books.
     """
 
-    context_id = Column('context_id', Integer, index=True,
+    context_id = Column('context_id', Integer,
+                        ForeignKey("RootContextId.context_id"),
+                        index=True,
                         nullable=False, primary_key=True, autoincrement=False)
 
     context_ds_id = Column('context_ds_id',
@@ -51,6 +58,10 @@ class RootContext(object):
 
     # This interval may be represented as time since epoch (e.g. mysql)
     duration = Column('duration', Interval, nullable=True)
+
+    @declared_attr
+    def _context_id_record(self):
+        return relationship('RootContextId', lazy="select", foreign_keys=[self.context_id])
 
 
 class Courses(Base, RootContext):
