@@ -14,6 +14,8 @@ from sqlalchemy import ForeignKey
 
 from sqlalchemy.ext.declarative import declared_attr
 
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.schema import PrimaryKeyConstraint
 
 from zope import interface
@@ -32,6 +34,10 @@ class EntityProfileMixin(BaseViewMixin, TimeLengthMixin):
     def target_id(self):
         return Column('target_id', Integer, ForeignKey("Users.user_id"),
                       index=True, nullable=False)
+
+    @declared_attr
+    def _target_record(self):
+        return relationship('Users', lazy="select", foreign_keys=[self.target_id])
 
 
 class EntityProfileViews(Base, EntityProfileMixin):

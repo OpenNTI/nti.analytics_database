@@ -13,6 +13,10 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.ext.declarative import declared_attr
+
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.schema import Sequence
 from sqlalchemy.schema import PrimaryKeyConstraint
 
@@ -55,6 +59,12 @@ class CourseEnrollments(Base, BaseTableMixin, CourseMixin):
     type_id = Column('type_id', Integer,
                      ForeignKey('EnrollmentTypes.type_id'),
                      index=True, nullable=False)
+
+    @declared_attr
+    def _type_record(self):
+        return relationship('EnrollmentTypes',
+                            lazy="select",
+                            foreign_keys=[self.type_id])
 
     __table_args__ = (
         PrimaryKeyConstraint('course_id', 'user_id'),

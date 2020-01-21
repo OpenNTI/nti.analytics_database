@@ -51,7 +51,12 @@ class Sessions(Base, UserMixin):
 
     ip_addr = Column('ip_addr', String(64))
 
-    user_agent_id = Column('user_agent_id', Integer)
+    user_agent_id = Column('user_agent_id',
+                           ForeignKey("UserAgents.user_agent_id"))
+    user_agent = relationship('UserAgents',
+                              uselist=False,
+                              lazy='joined',
+                              foreign_keys=[user_agent_id])
 
     start_time = Column('start_time', DateTime)
 
@@ -90,6 +95,11 @@ class IpGeoLocation(Base):
 
     user_id = Column('user_id', Integer, ForeignKey("Users.user_id"),
                      index=True, nullable=False)
+
+    user_record = relationship('Users',
+                               uselist=False,
+                               lazy='select',
+                               foreign_keys=[user_id])
 
     ip_addr = Column('ip_addr', String(64), index=True)
 

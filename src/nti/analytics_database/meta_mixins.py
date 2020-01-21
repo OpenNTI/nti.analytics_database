@@ -30,6 +30,11 @@ from nti.analytics_database import CONTEXT_PATH_SEPARATOR
 from nti.analytics_database.interfaces import IAnalyticsIntidIdentifier
 from nti.analytics_database.interfaces import IAnalyticsRootContextResolver
 
+from nti.analytics_database.root_context import Books
+from nti.analytics_database.root_context import Courses
+
+from nti.analytics_database.users import Users
+
 from nti.property.property import alias
 
 logger = __import__('logging').getLogger(__name__)
@@ -66,6 +71,10 @@ class BaseTableMixin(UserMixin):
     def session_id(self):
         return Column('session_id', SESSION_COLUMN_TYPE,
                       ForeignKey("Sessions.session_id"), nullable=True)
+
+    @declared_attr
+    def _session_record(self):
+        return relationship('Sessions', lazy="select", foreign_keys=[self.session_id])
 
     @declared_attr
     def user_id(self):
@@ -115,8 +124,16 @@ class ReferrerMixin(object):
 
 class CourseMixin(object):
 
-    course_id = Column('course_id', Integer, nullable=False, index=True,
+    @declared_attr
+    def course_id(self):
+        return Column('course_id', Integer,
+                       ForeignKey("Courses.context_id"),
+                       nullable=False, index=True,
                        autoincrement=False)
+
+    @declared_attr
+    def _course_record(self):
+        return relationship('Courses', lazy="select", foreign_keys=[self.course_id])
 
     @declared_attr
     def __table_args__(self):
@@ -130,9 +147,19 @@ class RootContextMixin(object):
     entity_root_context_id = Column('entity_root_context_id', Integer,
                                     nullable=True, index=True, autoincrement=False)
 
-    # NOTE: Rename this column for relevant tables.
+    # TODO: Rename this column for relevant tables.
     root_context_id = Column('course_id', Integer, nullable=True, index=True,
                              autoincrement=False)
+
+    @declared_attr
+    def _book_context_record(self):
+        return relationship('Books', lazy="select", foreign_keys=[self.root_context_id],
+                            primaryjoin=lambda: Books.context_id == self.root_context_id)
+
+    @declared_attr
+    def _course_context_record(self):
+        return relationship('Courses', lazy="select", foreign_keys=[self.root_context_id],
+                            primaryjoin=lambda: Courses.context_id == self.root_context_id)
 
     @property
     def RootContext(self):
@@ -146,6 +173,22 @@ class RootContextMixin(object):
     def RootContext(self, root_context):
         self._RootContext = root_context
 
+    @declared_attr
+    def _entity_root_context_record(self):
+        return relationship('Users', lazy="select", foreign_keys=[self.entity_root_context_id],
+                            primaryjoin=lambda: Users.user_id == self.entity_root_context_id)
+
+    @property
+    def _root_context_record(self):
+        return self._book_context_record or self._course_context_record
+
+    @_root_context_record.setter
+    def _root_context_record(self, value):
+        if value.__tablename__ == 'Books':
+            self._book_context_record = value
+        else:
+            self._course_context_record = value
+
     # BWC
     course_id = alias('root_context_id')
 
@@ -156,7 +199,7 @@ class ResourceMixin(RootContextMixin):
 
     @declared_attr
     def _resource(self):
-        return relationship('Resources', lazy="select")
+        return relationship('Resources', lazy="select", foreign_keys=[self.resource_id])
 
     @declared_attr
     def resource_id(self):
@@ -318,7 +361,7 @@ class FileMimeTypeMixin(object):
 
     @declared_attr
     def _mime_type(self):
-        return relationship('FileMimeTypes', lazy="select")
+        return relationship('FileMimeTypes', lazy="select", foreign_keys=[self.file_mime_type_id])
 
     @property
     def mime_type(self):

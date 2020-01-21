@@ -13,6 +13,11 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import Interval
+from sqlalchemy import ForeignKey
+
+from sqlalchemy.ext.declarative import declared_attr
+
+from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
 
@@ -25,13 +30,31 @@ from nti.analytics_database import Base
 logger = __import__('logging').getLogger(__name__)
 
 
+class RootContextId(Base):
+    """
+    A table to share a sequence between our RootContext tables; needed in mysql.
+    """
+
+    __tablename__ = 'ContextId'
+
+    # Start at 100 for simple migration.
+    context_id = Column('context_id', Integer,
+                        Sequence('context_id_seq', start=1000),
+                        nullable=False, primary_key=True)
+_RootContextId = RootContextId  # alias BWC
+
+
 class RootContext(object):
     """
     Stores root context objects of other events, such as courses and books.
     """
 
-    context_id = Column('context_id', Integer, index=True,
-                        nullable=False, primary_key=True, autoincrement=False)
+    @declared_attr
+    def context_id(self):
+        return Column('context_id', Integer,
+                      ForeignKey("ContextId.context_id"),
+                      index=True,
+                      nullable=False, primary_key=True, autoincrement=False)
 
     context_ds_id = Column('context_ds_id',
                            NTIID_COLUMN_TYPE,
@@ -52,6 +75,10 @@ class RootContext(object):
     # This interval may be represented as time since epoch (e.g. mysql)
     duration = Column('duration', Interval, nullable=True)
 
+    @declared_attr
+    def _context_id_record(self):
+        return relationship('RootContextId', lazy="select", foreign_keys=[self.context_id])
+
 
 class Courses(Base, RootContext):
 
@@ -64,20 +91,6 @@ class Courses(Base, RootContext):
 class Books(Base, RootContext):
 
     __tablename__ = 'Books'
-
-
-class RootContextId(Base):
-    """
-    A table to share a sequence between our RootContext tables; needed in mysql.
-    """
-
-    __tablename__ = 'ContextId'
-
-    # Start at 100 for simple migration.
-    context_id = Column('context_id', Integer,
-                        Sequence('context_id_seq', start=1000),
-                        nullable=False, primary_key=True)
-_RootContextId = RootContextId  # alias BWC
 
 
 from nti.analytics_database.interfaces import IDatabaseCreator
