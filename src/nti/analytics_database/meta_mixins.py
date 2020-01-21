@@ -186,6 +186,8 @@ class RootContextMixin(object):
 
     @_root_context_record.setter
     def _root_context_record(self, value):
+        if not value:
+            return
         if value.__tablename__ == 'Books':
             self._book_context_record = value
         else:
