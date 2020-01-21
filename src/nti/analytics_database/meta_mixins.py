@@ -139,6 +139,8 @@ class CourseMixin(object):
     def __table_args__(self):
         return (Index('ix_%s_user_course' % self.__tablename__, 'user_id', 'course_id'),)
 
+    _root_context_record = alias('_course_record')
+
 
 class RootContextMixin(object):
 
