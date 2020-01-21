@@ -15,6 +15,8 @@ from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.ext.declarative import declared_attr
+
 from sqlalchemy.orm import relationship
 
 from sqlalchemy.schema import Sequence
@@ -126,7 +128,9 @@ class UserFileUploadViewEvents(Base, BaseViewMixin, CreatorMixin, ReferrerMixin)
                                autoincrement=False,
                                index=True)
 
-    _file_mime_type = relationship('FileMimeTypes', lazy="select")
+    @declared_attr
+    def _file_mime_type(self):
+        return relationship('FileMimeTypes', lazy="select", foreign_keys=[self.file_mime_type_id])
 
     @property
     def mime_type(self):
