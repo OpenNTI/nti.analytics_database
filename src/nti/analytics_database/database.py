@@ -142,6 +142,14 @@ class AnalyticsDB(object):
             result = sessionmaker(bind=self.engine,
                                   twophase=self.twophase)
         else:
+            # The way stuff is currently architected, we *must* have
+            # autoflush enabled. This will ensure queries will flush to the
+            # db and have the most accurate view of state. If not, queries
+            # that do not query on a primary key (most of our tables have
+            # sequences for primary keys) will not find these newly added objects.
+            # Thus we may have duplicate dataserver objects in the analytics
+            # database.
+
             # Use the ZTE for transaction handling.
             result = sessionmaker(bind=self.engine,
                                   autoflush=True,
