@@ -78,11 +78,12 @@ class AnalyticsDB(object):
     max_overflow = 10
     pool_recycle = 300
 
-    def __init__(self, dburi=None, twophase=False, autocommit=False,
+    def __init__(self, dburi=None, twophase=False, autocommit=False, echo=False,
                  defaultSQLite=False, testmode=False, config=None, metadata=True):
         self.dburi = dburi
         self.twophase = twophase
         self.autocommit = autocommit
+        self.echo = echo
         self.testmode = testmode
         self.defaultSQLite = defaultSQLite
         if defaultSQLite and not dburi:
@@ -118,11 +119,13 @@ class AnalyticsDB(object):
             # Only for tests.
             result = create_engine(self.dburi,
                                    connect_args={'check_same_thread': False},
+                                   echo=self.echo,
                                    poolclass=StaticPool)
 
         elif   self.dburi.startswith('sqlite') \
             or self.dburi.startswith('gevent+sqlite'):
-            result = create_engine(self.dburi)
+            result = create_engine(self.dburi,
+                                   echo=self.echo)
 
             @event.listens_for(result, "begin")
             def do_begin(conn):
@@ -132,7 +135,7 @@ class AnalyticsDB(object):
                                    pool_size=self.pool_size,
                                    max_overflow=self.max_overflow,
                                    pool_recycle=self.pool_recycle,
-                                   echo=False,
+                                   echo=self.echo,
                                    echo_pool=False)
         return result
 

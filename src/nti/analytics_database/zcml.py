@@ -34,13 +34,14 @@ class IRegisterAnalyticsDB(interface.Interface):
     dburi = TextLine(title=u"db uri", required=False)
     twophase = Bool(title=u"twophase commit", required=False)
     autocommit = Bool(title=u"autocommit", required=False)
+    echo = Bool(title=u"echo", required=False)
     defaultSQLite = Bool(title=u"default to SQLite", required=False)
     testmode = Bool(title=u"start the db in test mode", required=False)
     config = TextLine(title=u"path to config file", required=False)
 
 
 def registerAnalyticsDB(_context, dburi=None, twophase=False, autocommit=False,
-                        defaultSQLite=False, testmode=False, config=None):
+                        defaultSQLite=False, testmode=False, config=None, echo=False):
     """
     Register the db
     """
@@ -50,5 +51,6 @@ def registerAnalyticsDB(_context, dburi=None, twophase=False, autocommit=False,
                                 autocommit=autocommit,
                                 defaultSQLite=defaultSQLite,
                                 testmode=testmode,
+                                echo=echo,
                                 config=config)
     utility(_context, provides=IAnalyticsDB, factory=factory)
