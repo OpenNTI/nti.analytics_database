@@ -89,6 +89,11 @@ class ChatsJoined(Base, BaseTableMixin):
     chat_id = Column('chat_id', Integer, ForeignKey("ChatsInitiated.chat_id"),
                      nullable=False, index=True)
 
+    chat = relationship('ChatsInitiated',
+                         uselist=False,
+                         lazy='joined',
+                         foreign_keys=[chat_id])
+
     __table_args__ = (
         PrimaryKeyConstraint('chat_id', 'user_id', 'timestamp'),
     )
